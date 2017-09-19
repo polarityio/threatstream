@@ -1,0 +1,65 @@
+<div class="details-container">
+    {{#each (limit enrichedDetails maxSourcesInBlock) as |item index|}}
+        <div class="item">
+            <p>
+                Status: <b>{{item.statusDisplay}}</b> <a href="https://staxx.anomali.com/detail/ip/{{item.value}}">(View in STAXX)</a>
+            </p>
+            <h5><i class="bts bt-fw bt-label h5"></i> Info</h5>
+            <p>
+
+            </p>
+            <p>
+                Type: <b>{{item.type}} ({{item.itype}})</b>
+            </p>
+            <p>
+                Threat Score: <b>{{item.threatscore}}</b>
+            </p>
+            <p>
+                Confidence: <b>{{item.confidence}}</b>
+            </p>
+            <p>
+                Threat Type: <b>{{item.threat_type}}</b>
+            </p>
+            <p>
+                Severity: <span style="color:{{item.meta.severityColor}}; font-weight: bold">{{item.meta.severity}}</span>
+            </p>
+            <p>
+                Created: <b>{{moment-time item.created_ts}}</b>
+            </p>
+            <p>
+                Modified: <b>{{moment-time item.modified_ts}}</b>
+            </p>
+            <p>
+                Source: <b>{{item.source}}</b>
+            </p>
+            <p>
+                Source Reported Confidence: <b>{{item.source_reported_confidence}}</b>
+            </p>
+            {{#if item.rdns}}
+                <p>
+                    {{item.rdns}}
+                </p>
+            {{/if}}
+
+            <h5><i class="bts bt-fw bt-label h5"></i> Tags</h5>
+            <div class="tag-container">
+                {{#each (limit item.tags maxTagsInBlock) as |tag|}}
+                    <span class="integration-summary-tag integration-border-color">
+                        <span>{{tag.name}}</span>
+                    </span>
+                {{/each}}
+                {{#if (gt item.additionalTagCount 0)}}
+                    <span class="integration-summary-tag integration-border-color">
+                        <span>+{{item.additionalTagCount}}</span>
+                    </span>
+                {{/if}}
+            </div>
+            <div style="clear:both; margin-bottom: 5px;"></div>
+        </div>
+    {{/each}}
+    {{#if (gt additionalSourcesCount 0)}}
+        <div class="additional-sources-count">
+            +{{additionalSourcesCount}} more {{if (eq additionalSourcesCount 1) "source" "sources"}}
+        </div>
+    {{/if}}
+</div>
