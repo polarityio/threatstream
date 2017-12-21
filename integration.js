@@ -35,8 +35,6 @@ function createEntityGroups(entities, options, cb) {
 
         if ((entity.isPrivateIP || IGNORED_IPS.has(entity.value)) && options.ignorePrivateIps) {
             return;
-        } else if (isIgnorableHash(entity)) {
-            return;
         } else {
             entityGroup.push('value="' + entity.value + '"');
             entityLookup[entity.value.toLowerCase()] = entity;
@@ -49,15 +47,6 @@ function createEntityGroups(entities, options, cb) {
     }
 
     _doLookup(entityGroups, entityLookup, options, cb);
-}
-
-// Threatstream API only supports MD5 and SHA hashes currently.
-function isIgnorableHash(entity) {
-    return entity.isHash 
-        && !entity.isMD5 
-        && !entity.isSHA1 
-        && !entity.isSHA256 
-        && !entity.isSHA512;
 }
 
 /**
