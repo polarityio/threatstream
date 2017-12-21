@@ -35,6 +35,8 @@ function createEntityGroups(entities, options, cb) {
 
         if ((entity.isPrivateIP || IGNORED_IPS.has(entity.value)) && options.ignorePrivateIps) {
             return;
+        } else if (isIgnorableHash(entity)) {
+            return;
         } else {
             entityGroup.push('value="' + entity.value + '"');
             entityLookup[entity.value.toLowerCase()] = entity;
@@ -47,6 +49,15 @@ function createEntityGroups(entities, options, cb) {
     }
 
     _doLookup(entityGroups, entityLookup, options, cb);
+}
+
+// Threatstream API only supports MD5 and SHA hashes currently.
+function isIgnorableHash(entity) {
+    return entity.isHash 
+        && !entity.isMD5 
+        && !entity.isSHA1 
+        && !entity.isSHA256 
+        && !entity.isSHA512;
 }
 
 /**
@@ -74,6 +85,15 @@ function _doLookup(entityGroups, entityLookup, options, cb) {
                 let indicators = Object.keys(entityGroup);
                 indicators.forEach(indicator => {
                     let indicatorGroup = entityGroup[indicator];
+
+                    // If tags are null or undefined then the client will not 
+                    // display the result, so we add an empty array here.
+                    indicatorGroup.forEach(group => {
+                        if (!group.tags) {
+                            group.tags = [];
+                        }
+                    });
+
                     lookupResults.push({
                         entity: entityLookup[indicator.toLowerCase()],
                         data: {
@@ -131,7 +151,10 @@ function _lookupEntity(entitiesArray, entityLookup, options, done) {
         username: options.username,
         api_key: options.apikey,
         q: "(" + entitiesArray.join(" OR ") + ") AND confidence>=" +
-        options.minimumConfidence + " AND (" + severityQueryString + ") AND type=ip " + activeQueryString,
+            options.minimumConfidence + " AND (" + severityQueryString + ") AND "+
+            "(type=ip OR type=domain OR type=email OR type=md5 OR type=url) "
+            // ThreatStream API groups all hashes under the MD5 type
+            + activeQueryString,
         limit: 50
     };
     requestOptions.json = true;

@@ -2,7 +2,7 @@
 
 ![image](https://img.shields.io/badge/status-beta-green.svg)
 
-Polarity's ThreatStream integration gives users access to automated IPv4 lookups within Anomali's ThreatStream platform..
+Polarity's ThreatStream integration gives users access to automated IPv4, domain, URL, email, and hash (MD5 and SHA) lookups within Anomali's ThreatStream platform..
 
 To learn more about Anomali ThreatStream please see their official website at [https://www.anomali.com/platform/threatstream](https://www.anomali.com/platform/threatstream)
 
