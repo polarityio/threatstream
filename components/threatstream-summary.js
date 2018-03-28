@@ -55,8 +55,10 @@ polarity.export = PolarityComponent.extend({
     highestThreatScore: Ember.computed('details', function(){
         let highestThreatScore = 0;
         this.get('details').forEach(function(item){
-            if(item.threatscore > highestThreatScore){
-                highestThreatScore = item.threatscore;
+            if(item.threatscore){
+                if(item.threatscore > highestThreatScore){
+                    highestThreatScore = item.threatscore;
+                }
             }
         });
 
@@ -72,8 +74,10 @@ polarity.export = PolarityComponent.extend({
 
         let highestSeverity = 'low';
         this.get('details').forEach(function(item){
-            if(severityLevels[item.meta.severity] > severityLevels[highestSeverity]){
-                highestSeverity = item.meta.severity;
+            if(item.meta && item.meta.severity){
+                if(severityLevels[item.meta.severity] > severityLevels[highestSeverity]){
+                    highestSeverity = item.meta.severity;
+                }
             }
         });
 
