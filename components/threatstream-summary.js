@@ -37,12 +37,14 @@ polarity.export = PolarityComponent.extend({
         let itypes = {};
 
         this.get('details').forEach(function(item){
-            itypes[item.itype] = true;
+            if(item.itype){
+                itypes[item.itype] = true;
+            }
         });
 
         let uniqueTypes = Object.keys(itypes);
 
-        if(uniqueTypes > MAX_TYPES){
+        if(uniqueTypes.length > MAX_TYPES){
             let additionalTypes = uniqueTypes.length - MAX_TYPES;
             uniqueTypes = uniqueTypes.slice(0, MAX_TYPES);
             uniqueTypes.push('+' + additionalTypes);
@@ -53,8 +55,10 @@ polarity.export = PolarityComponent.extend({
     highestThreatScore: Ember.computed('details', function(){
         let highestThreatScore = 0;
         this.get('details').forEach(function(item){
-            if(item.threatscore > highestThreatScore){
-                highestThreatScore = item.threatscore;
+            if(item.threatscore){
+                if(item.threatscore > highestThreatScore){
+                    highestThreatScore = item.threatscore;
+                }
             }
         });
 
@@ -70,8 +74,10 @@ polarity.export = PolarityComponent.extend({
 
         let highestSeverity = 'low';
         this.get('details').forEach(function(item){
-            if(severityLevels[item.meta.severity] > severityLevels[highestSeverity]){
-                highestSeverity = item.meta.severity;
+            if(item.meta && item.meta.severity){
+                if(severityLevels[item.meta.severity] > severityLevels[highestSeverity]){
+                    highestSeverity = item.meta.severity;
+                }
             }
         });
 

@@ -20,27 +20,43 @@ polarity.export = PolarityComponent.extend({
     enrichedDetails: Ember.computed('details', function(){
         let self = this;
         this.get('details').forEach(function(item){
-            let tags = item.tags;
-            if(tags.length > self.get('maxTagsInBlock')){
-                item.additionalTagCount = tags.length - self.get('maxTagsInBlock');
+            if(Array.isArray(item.tags)){
+                let tags = item.tags;
+                if(tags.length > self.get('maxTagsInBlock')){
+                    item.additionalTagCount = tags.length - self.get('maxTagsInBlock');
+                }else{
+                    item.additionalTagCount = 0;
+                }
             }else{
                 item.additionalTagCount = 0;
             }
 
-            if(item.status === 'active'){
-                item.statusDisplay = 'Active';
+
+            if(item.status){
+                if(item.status === 'active'){
+                    item.statusDisplay = 'Active';
+                }else{
+                    item.statusDisplay = 'Inactive';
+                }
             }else{
-                item.statusDisplay = 'Inactive';
+                item.statusDisplay = 'N/A';
             }
 
-            if(item.meta.severity === 'medium' || item.meta.severity === 'high' || item.meta.severity === 'very-high'){
-                item.meta.severityColor = '#FF4559';
-            }else{
-                item.meta.severityColor = '#FF8F00';
+
+            if(item.meta && item.meta.severity) {
+                if (item.meta.severity === 'medium' || item.meta.severity === 'high' || item.meta.severity === 'very-high') {
+                    item.meta.severityColor = '#FF4559';
+                } else {
+                    item.meta.severityColor = '#FF8F00';
+                }
             }
 
-            if(item.confidence > 50){
-                item.confidenceColor = '#388E3C';
+            if(item.confidence){
+                if(item.confidence > 50){
+                    item.confidenceColor = '#388E3C';
+                }else{
+                    item.confidenceColor = '';
+                }
             }else{
                 item.confidenceColor = '';
             }

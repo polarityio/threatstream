@@ -46,7 +46,11 @@ function createEntityGroups(entities, options, cb) {
         entityGroups.push(entityGroup);
     }
 
-    _doLookup(entityGroups, entityLookup, options, cb);
+    if (entityGroups.length > 0) {
+        _doLookup(entityGroups, entityLookup, options, cb);
+    } else {
+        cb(null, []);
+    }
 }
 
 /**
@@ -57,23 +61,22 @@ function createEntityGroups(entities, options, cb) {
  */
 function _doLookup(entityGroups, entityLookup, options, cb) {
     let lookupResults = [];
+    Logger.debug({entityGroups: entityGroups}, 'Looking up Entity Groups');
 
-    if (entityGroups.length > 0) {
-        Logger.debug({entityGroups: entityGroups}, 'Looking up Entity Groups');
+    async.map(entityGroups, function (entityGroup, next) {
+        _lookupEntity(entityGroup, entityLookup, options, next);
+    }, function (err, results) {
+        if (err) {
+            cb(err);
+            return;
+        }
 
-        async.map(entityGroups, function (entityGroup, next) {
-            _lookupEntity(entityGroup, entityLookup, options, next);
-        }, function (err, results) {
-            if (err) {
-                cb(err);
-                return;
-            }
-
-            results.forEach(entityGroup => {
-                // an entityGroup will be an object keyed on the indicator value
-                let indicators = Object.keys(entityGroup);
-                indicators.forEach(indicator => {
-                    let indicatorGroup = entityGroup[indicator];
+        for (let entityGroup of results) {
+            // an entityGroup will be an object keyed on the indicator value
+            let indicators = Object.keys(entityGroup);
+            for (let indicator of indicators) {
+                let indicatorGroup = entityGroup[indicator];
+                if (Array.isArray(indicatorGroup)) {
                     lookupResults.push({
                         entity: entityLookup[indicator.toLowerCase()],
                         data: {
@@ -81,14 +84,23 @@ function _doLookup(entityGroups, entityLookup, options, cb) {
                             details: indicatorGroup
                         }
                     });
-                });
-            });
+                } else {
+                    Logger.error({indicatorGroup: indicatorGroup}, 'Invalid format for Indicator Group.  Expecting Array');
+                    cb({
+                        detail: 'Invalid Indicator Group Format.  Expecting Array',
+                        debug: {
+                            indicatorGroup: indicatorGroup
+                        }
+                    });
+                    return;
+                }
+            }
+        }
 
-            Logger.trace({lookupResults: lookupResults}, 'Lookup Results');
+        Logger.trace({lookupResults: lookupResults}, 'Lookup Results');
 
-            cb(null, lookupResults);
-        });
-    }
+        cb(null, lookupResults);
+    });
 }
 
 
@@ -119,9 +131,9 @@ function _handleRequestError(err, response, body, options, cb) {
 
 function _lookupEntity(entitiesArray, entityLookup, options, done) {
     let severityQueryString = SEVERITY_LEVELS_QUERY_FORMAT.slice(SEVERITY_LEVELS.indexOf(options.minimumSeverity))
-        .join(" OR " );
+        .join(" OR ");
     let activeQueryString = '';
-    if(options.activeOnly === true){
+    if (options.activeOnly === true) {
         activeQueryString = ' AND status=active ';
     }
     //do the lookup
@@ -154,14 +166,16 @@ function _lookupEntity(entitiesArray, entityLookup, options, done) {
             // so we need to group together data by indicator value.
             let indicators = body.objects;
             let indicatorResults = {};
-            indicators.forEach(indicator =>{
-                if(!indicatorResults[indicator.value]){
-                    indicatorResults[indicator.value] = [];
-                }
-                indicatorResults[indicator.value].push(indicator);
-            });
+            if (Array.isArray(indicators)) {
+                indicators.forEach(indicator => {
+                    if (!indicatorResults[indicator.value]) {
+                        indicatorResults[indicator.value] = [];
+                    }
+                    indicatorResults[indicator.value].push(indicator);
+                });
+            }
 
-            Logger.info({indicatorResults:indicatorResults});
+            Logger.info({indicatorResults: indicatorResults});
 
             done(null, indicatorResults);
         });
