@@ -46,7 +46,11 @@ function createEntityGroups(entities, options, cb) {
         entityGroups.push(entityGroup);
     }
 
-    _doLookup(entityGroups, entityLookup, options, cb);
+    if (entityGroups.length > 0) {
+        _doLookup(entityGroups, entityLookup, options, cb);
+    } else {
+        cb(null, []);
+    }
 }
 
 /**
