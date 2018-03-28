@@ -37,12 +37,14 @@ polarity.export = PolarityComponent.extend({
         let itypes = {};
 
         this.get('details').forEach(function(item){
-            itypes[item.itype] = true;
+            if(item.itype){
+                itypes[item.itype] = true;
+            }
         });
 
         let uniqueTypes = Object.keys(itypes);
 
-        if(uniqueTypes > MAX_TYPES){
+        if(uniqueTypes.length > MAX_TYPES){
             let additionalTypes = uniqueTypes.length - MAX_TYPES;
             uniqueTypes = uniqueTypes.slice(0, MAX_TYPES);
             uniqueTypes.push('+' + additionalTypes);
