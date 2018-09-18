@@ -1,58 +1,83 @@
 <div class="details-container">
     {{#each (limit enrichedDetails maxSourcesInBlock) as |item index|}}
         <div class="item">
-            <p>
-                Status: <b>{{item.statusDisplay}}</b> <a href="https://staxx.anomali.com/detail/ip/{{item.value}}">(View in STAXX)</a>
-            </p>
-            <h5><i class="bts bt-fw bt-info-circle h5"></i> Info</h5>
-            <p>
-
-            </p>
-            <p>
-                Type: <b>{{item.type}} ({{item.itype}})</b>
-            </p>
-            <p>
-                Threat Score: <b>{{item.threatscore}}</b>
-            </p>
-            <p>
-                Confidence: <span style="color:{{item.confidenceColor}}; font-weight: bold">{{item.confidence}}</span>
-            </p>
-            <p>
-                Threat Type: <b>{{item.threat_type}}</b>
-            </p>
-            <p>
-                Severity: <span style="color:{{item.meta.severityColor}}; font-weight: bold">{{item.meta.severity}}</span>
-            </p>
-            <p>
-                Created: <b>{{moment-time item.created_ts}}</b>
-            </p>
-            <p>
-                Modified: <b>{{moment-time item.modified_ts}}</b>
-            </p>
-            <p>
-                Source: <b>{{item.source}}</b>
-            </p>
-            <p>
-                Source Reported Confidence: <b>{{item.source_reported_confidence}}</b>
-            </p>
+            <h1 class="p-title">
+                {{fa-icon "info-circle" fixedWidth=true}} Info
+                <a class="p-link" href="{{block.userOptions.url}}/detail/ip/{{item.value}}">&nbsp;(View in TS)</a>
+            </h1>
+            <div>
+                <span class="p-key">Status: </span>
+                <span class="p-value">{{item.statusDisplay}}</span>
+            </div>
+            <div>
+                <span class="p-key">Type: </span>
+                <span class="p-value">{{item.type}} ({{item.itype}})</span>
+            </div>
+            <div>
+                <span class="p-key">Threat Score: </span>
+                <span class="p-value">{{item.threatscore}}</span>
+            </div>
+            <div>
+                <span class="p-key">Confidence: </span>
+                <span class="p-value"
+                      style="color:{{item.confidenceColor}}; font-weight: bold">{{item.confidence}}</span>
+            </div>
+            <div>
+                <span class="p-key">Threat Type: </span>
+                <span class="p-value">{{item.threat_type}}</span>
+            </div>
+            <div>
+                <span class="p-key">Severity: </span>
+                <span class="p-value"
+                      style="color:{{item.meta.severityColor}}; font-weight: bold">{{item.meta.severity}}</span>
+            </div>
+            <div>
+                <span class="p-key">Created: </span>
+                <span class="p-value">{{moment-time item.created_ts}}</span>
+            </div>
+            <div>
+                <span class="p-key">Modified: </span>
+                <span class="p-value">{{moment-time item.modified_ts}}</span>
+            </div>
+            <div>
+                <span class="p-key">Source: </span>
+                <span class="p-value">{{item.source}}</span>
+            </div>
+            <div>
+                <span class="p-key">Source Reported Confidence: </span>
+                <span class="p-value">{{item.source_reported_confidence}}</span>
+            </div>
             {{#if item.rdns}}
-                <p>
-                    {{item.rdns}}
-                </p>
+                <div>
+                    <span class="p-key">RDNS: </span>
+                    <span class="p-value">{{item.rdns}}</span>
+                </div>
             {{/if}}
 
-            <h5><i class="bts bt-fw bt-label h5"></i> Tags</h5>
+            <h1 class="p-title">
+                {{fa-icon "tags" fixedWidth=true}} Tags
+            </h1>
             <div class="tag-container">
                 {{#each (limit item.tags maxTagsInBlock) as |tag|}}
-                    <span class="integration-summary-tag integration-border-color">
-                        <span>{{tag.name}}</span>
-                    </span>
+                    <a title="{{block.userOptions.url}}/search?status=active&tags={{tag.name}}"
+                       href="{{block.userOptions.url}}/search?status=active&tags={{tag.name}}" class="tag">{{tag.name}}</a>
                 {{/each}}
+                <div class="p-footnote">(Tags link to your ThreatStream instance)</div>
                 {{#if (gt item.additionalTagCount 0)}}
                     <span class="integration-summary-tag integration-border-color">
                         <span>+{{item.additionalTagCount}}</span>
                     </span>
                 {{/if}}
+                {{!--
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Tag to Add" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                    {{input type="text" value=newTag}}
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" {{action "addTag" item.id}}>Add Tag</button>
+                    </div>
+                </div>
+                {{actionMessage}}
+                --}}
             </div>
             <div style="clear:both; margin-bottom: 5px;"></div>
         </div>
