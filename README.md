@@ -6,9 +6,7 @@ Polarity's ThreatStream integration gives users access to automated IPv4 lookups
 
 To learn more about Anomali ThreatStream please see their official website at [https://www.anomali.com/platform/threatstream](https://www.anomali.com/platform/threatstream)
 
-> Note: This integration is currently in BETA.  Please see the [issues](https://github.com/polarityio/staxx/issues) page for known issues.
-
-| ![image](https://user-images.githubusercontent.com/306319/30600493-948db9e8-9d2d-11e7-9373-6c12cb2aa26a.png)  |
+| ![image](https://user-images.githubusercontent.com/306319/45698055-24cee600-bb35-11e8-9ed9-4d07f26ed23e.png)  |
 |---|
 |*Anomali ThreatStream Example* |
 
@@ -46,6 +44,6 @@ If set to true, private IPs (RFC 1918 addresses) will not be looked up (includes
 
 ## Polarity
 
-Polarity is a memory-augmentation platform that improves and accelerates analyst decision making.  For more information about the Polarity platform please see: 
+Polarity is a memory-augmentation platform that improves and accelerates analyst decision making.  For more information about the Polarity platform please see:
 
 https://polarity.io/
