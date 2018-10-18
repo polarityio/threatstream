@@ -1,16 +1,16 @@
 {
   "main": "./integration.js",
   "name": "AnomaliThreatStream",
-  "version": "1.1.0-beta",
+  "version": "1.2.0-beta",
   "private": true,
   "dependencies": {
-    "request": "^2.75",
-    "lodash": "^4.16",
-    "async": "2.1.4"
+    "request": "^2.88",
+    "lodash": "^4.17",
+    "async": "2.6.1"
   },
   "devDependencies": {
-    "chai": "~3.5",
-    "mocha": "~3.2"
+    "chai": "~4.2",
+    "mocha": "~5.2"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha --recursive"
