@@ -233,6 +233,12 @@ function _getType(entityType) {
   switch (entityType) {
     case 'IPv4':
       return 'type=ip';
+    case 'IPv6':
+      return 'type=ip';
+    case 'domain':
+      return 'type=domain';
+    case 'url':
+      return 'type=url';
     case 'hash':
       return 'type=md5';
     case 'email':
