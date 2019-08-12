@@ -1,5 +1,6 @@
 polarity.export = PolarityComponent.extend({
   details: Ember.computed.alias('block.data.details'),
+  initialTags: [],
   // This is the max number of tags we will display for a source in the details block
   maxTagsInBlock: 10,
   // This is the number of sources an indicator can have (i.e., how many results were returned for a single indicator)
@@ -80,7 +81,28 @@ polarity.export = PolarityComponent.extend({
 
     return enrichedDetails;
   }),
+  _searchTags: function(term) {
+    let self = this;
+
+    let payload = {
+      action: 'SEARCH_TAGS',
+      term: term
+    };
+
+    return this.sendIntegrationMessage(payload)
+      .then((result) => {
+        console.info(result);
+        self.set('initialTags', result.tags);
+        return result.tags;
+      })
+      .catch((err) => {
+        console.info(err);
+      });
+  },
   actions: {
+    searchTags: function(term) {
+      Ember.run.debounce(this, this._searchTags, term, 1000);
+    },
     addTag: function(recordId) {
       let self = this;
 

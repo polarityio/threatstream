@@ -68,6 +68,23 @@
                         <span>+{{item.additionalTagCount}}</span>
                     </span>
                 {{/if}}
+                {{#power-select
+                        selected=selectedTag
+                        options=initialTags
+                        searchEnabled=true
+                        search=(action "searchTags")
+                        placeholder="Add Tag"
+                        searchMessage="Loading Tags ..."
+                        searchPlaceholder="Search tags"
+                        closeOnSelect=true
+                        onopen=(action "searchTags" "")
+                        onchange=(action (mut selectedTag)) as |tag|}}
+                    {{tag.name}}
+                    {{#if tag.isPreferred}}
+                        {{fa-icon "check-circle" fixedWidth=true}}
+                    {{/if}}
+                {{/power-select}}
+
                 {{!--
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="Tag to Add" aria-label="Recipient's username" aria-describedby="basic-addon2">

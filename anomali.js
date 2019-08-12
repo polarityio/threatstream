@@ -45,6 +45,7 @@ class Anomali {
 
     // used to cached the list of preferred tags
     this.preferredTags = [];
+    this.isInitialized = false;
     this.request = request.defaults(this._getRequestDefaults(connectOptions));
   }
   _isValidTlp(tlp) {
@@ -232,6 +233,7 @@ class Anomali {
 
   async cachePreferredTags(options) {
     this.preferredTags = await this.getPreferredTags(options);
+    this.isInitialized = true;
   }
 
   /**
@@ -286,7 +288,12 @@ class Anomali {
       );
     });
 
-    let mergedTags = filteredPreferredTags.concat(orgTags);
+    let searchArray = [];
+
+    if (searchTerm) {
+      searchArray.push({ isPreferred: false, name: searchTerm });
+    }
+    let mergedTags = searchArray.concat(filteredPreferredTags.concat(orgTags));
 
     return mergedTags;
   }

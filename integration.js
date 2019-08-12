@@ -5,6 +5,7 @@ const _ = require('lodash');
 const config = require('./config/config');
 const async = require('async');
 const fs = require('fs');
+const Anomali = require('./anomali');
 
 const IGNORED_IPS = new Set(['127.0.0.1', '255.255.255.255', '0.0.0.0']);
 const VALID_TLPS = ['white', 'red', 'green', 'amber'];
@@ -19,14 +20,23 @@ const MAX_ENTITIES_PER_LOOKUP = 10;
 
 let Logger;
 let requestWithDefaults;
+let anomali;
 
-function createEntityGroups(entities, options, cb) {
+async function createEntityGroups(entities, options, cb) {
   const entityLookup = {};
   const entityGroups = [];
   let entityGroup = [];
   const types = new Set();
 
   Logger.trace({ entities: entities, options: options }, 'Entities and Options');
+
+  if (!anomali.isInitialized) {
+    try {
+      await anomali.cachePreferredTags(options);
+    } catch (err) {
+      cb(err);
+    }
+  }
 
   entities.forEach(function(entity) {
     if (entityGroup.length >= MAX_ENTITIES_PER_LOOKUP) {
@@ -186,7 +196,7 @@ function _lookupEntity(entitiesArray, entityLookup, types, options, done) {
 
   //do the lookup
   const requestOptions = {
-    uri: `${options.url}/api/v2/intelligence`,
+    uri: `${options.apiUrl}/api/v2/intelligence`,
     method: 'GET',
     qs: {
       username: options.username,
@@ -248,9 +258,18 @@ function _getType(entityType) {
   }
 }
 
-function onMessage(payload, options, cb) {
+async function onMessage(payload, options, cb) {
   Logger.debug({ payload: payload }, 'OnMessage');
   switch (payload.action) {
+    case 'SEARCH_TAGS':
+      try {
+        let tags = await anomali.getTags(options, payload.term, []);
+        Logger.debug({ tags }, 'SEARCH_TAGS result');
+        cb(null, { tags });
+      } catch (err) {
+        cb(err);
+      }
+      break;
     case 'ADD_TAG':
       if (!_isValidTlp(payload.tlp)) {
         return cb('Invalid TLP value provided');
@@ -292,7 +311,7 @@ function _isValidTlp(tlp) {
 
 function addTag(record, options, cb) {
   const requestOptions = {
-    uri: `${options.url}/api/v1/intelligence/${record.id}/tag/`,
+    uri: `${options.apiUrl}/api/v1/intelligence/${record.id}/tag/`,
     method: 'POST',
     json: true,
     qs: {
@@ -331,7 +350,7 @@ function addTag(record, options, cb) {
 
 function getUserInfo(options, cb) {
   let requestOptions = {
-    uri: `${options.url}/api/v1/user`,
+    uri: `${options.apiUrl}/api/v1/user`,
     method: 'GET',
     json: true,
     qs: {
@@ -428,17 +447,19 @@ function startup(logger) {
     requestOptions.rejectUnauthorized = config.request.rejectUnauthorized;
   }
 
+  anomali = new Anomali(requestOptions, logger);
+
   requestWithDefaults = request.defaults(requestOptions);
 }
 
 function validateOptions(userOptions, cb) {
   let errors = [];
   if (
-    typeof userOptions.url.value !== 'string' ||
-    (typeof userOptions.url.value === 'string' && userOptions.url.value.length === 0)
+    typeof userOptions.apiUrl.value !== 'string' ||
+    (typeof userOptions.apiUrl.value === 'string' && userOptions.apiUrl.value.length === 0)
   ) {
     errors.push({
-      key: 'url',
+      key: 'apiUrl',
       message: 'You must provide your ThreatStream server URL'
     });
   }
@@ -499,6 +520,6 @@ module.exports = {
   doLookup: createEntityGroups,
   startup: startup,
   // Disabled for now
-  //onMessage: onMessage,
+  onMessage: onMessage,
   validateOptions: validateOptions
 };
