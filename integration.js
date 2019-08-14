@@ -34,7 +34,7 @@ async function createEntityGroups(entities, options, cb) {
     try {
       await anomali.cachePreferredTags(options);
     } catch (err) {
-      cb(err);
+      return cb(err);
     }
   }
 
@@ -263,7 +263,7 @@ async function onMessage(payload, options, cb) {
   switch (payload.action) {
     case 'SEARCH_TAGS':
       try {
-        let tags = await anomali.getTags(options, payload.term, []);
+        let tags = await anomali.getTags(options, payload.term, payload.exclude);
         Logger.debug({ tags }, 'SEARCH_TAGS result');
         cb(null, { tags });
       } catch (err) {
@@ -271,114 +271,46 @@ async function onMessage(payload, options, cb) {
       }
       break;
     case 'ADD_TAG':
-      if (!_isValidTlp(payload.tlp)) {
-        return cb('Invalid TLP value provided');
+      try {
+        let result = await anomali.addTag(options, payload.tag, payload.observableId, payload.tlp);
+        Logger.debug(result, 'ADD_TAG result');
+        cb(null, result);
+      } catch (err) {
+        cb(err);
       }
-      async.waterfall(
-        [
-          function(next) {
-            Logger.debug('Getting user info');
-            getUserInfo(options, next);
-          },
-          function(userInfo, next) {
-            addTag(
-              {
-                tag: payload.tag,
-                id: payload.recordId,
-                userId: userInfo.userId,
-                orgId: userInfo.orgId,
-                tlp: payload.tlp
-              },
-              options,
-              next
-            );
-          }
-        ],
-        (err) => {
-          cb(err, { reply: 'Added Tag Successfully!' });
-        }
-      );
+      break;
+    case 'DELETE_TAG':
+      try {
+        let result = await anomali.deleteTag(options, payload.observableId, payload.tagId);
+        Logger.debug({ result }, 'DELETE_TAG result');
+        //let observable = await anomali.getObservable(options, payload.observableId);
+        //Logger.debug({observable}, 'GET_OBSERVABLE');
+        cb(null, result);
+      } catch (err) {
+        cb(err);
+      }
+      break;
+    case 'GET_OBSERVABLE':
+      try {
+        let observable = await anomali.getObservable(options, payload.observableId);
+        cb(null, observable);
+      } catch (err) {
+        cb(err);
+      }
+      break;
+    case 'UPDATE_OBSERVABLE':
+      try {
+        let observable = await anomali.updateObservable(
+          options,
+          payload.observableId,
+          payload.updateFields
+        );
+        cb(null, observable);
+      } catch (err) {
+        cb(err);
+      }
       break;
   }
-}
-
-function _isValidTlp(tlp) {
-  if (VALID_TLPS.includes(tlp)) {
-    return true;
-  }
-  return false;
-}
-
-function addTag(record, options, cb) {
-  const requestOptions = {
-    uri: `${options.apiUrl}/api/v1/intelligence/${record.id}/tag/`,
-    method: 'POST',
-    json: true,
-    qs: {
-      username: options.username,
-      api_key: options.apikey
-    },
-    body: {
-      tags: [
-        {
-          name: record.tag,
-          category: 'user',
-          org_id: record.orgId,
-          source_user: '',
-          source_user_id: record.userId,
-          tagger: 'user',
-          tlp: record.tlp
-        }
-      ]
-    }
-  };
-
-  Logger.debug({ requestOptions }, 'addTag');
-
-  requestWithDefaults(requestOptions, function(err, response, body) {
-    _handle201RequestError(err, response, body, options, function(err, body) {
-      if (err) {
-        Logger.error({ err }, 'Error Adding Tag');
-        return cb(err);
-      }
-
-      Logger.debug({ body }, 'Result from adding tag');
-      cb(null);
-    });
-  });
-}
-
-function getUserInfo(options, cb) {
-  let requestOptions = {
-    uri: `${options.apiUrl}/api/v1/user`,
-    method: 'GET',
-    json: true,
-    qs: {
-      username: options.username,
-      api_key: options.apikey
-    }
-  };
-
-  Logger.debug({ requestOptions: requestOptions }, 'getUserInfo');
-
-  requestWithDefaults(requestOptions, function(err, response, body) {
-    _handle200RequestError(err, response, body, options, function(err, body) {
-      if (err) {
-        Logger.error({ err: err }, 'Error Getting User Information');
-        return cb(err);
-      }
-
-      if (Array.isArray(body.objects) && body.objects.length > 0) {
-        const userObj = body.objects[0];
-        const userId = userObj.api_key.id;
-        const orgId = userObj.organization.id;
-        Logger.debug({ userId, orgId }, 'getUserInfo Results');
-        cb(null, { userId, orgId });
-      } else {
-        cb('Unexpected user response body');
-      }
-    });
-  });
 }
 
 /**
@@ -447,7 +379,7 @@ function startup(logger) {
     requestOptions.rejectUnauthorized = config.request.rejectUnauthorized;
   }
 
-  anomali = new Anomali(requestOptions, logger);
+  anomali = new Anomali(requestOptions, Logger);
 
   requestWithDefaults = request.defaults(requestOptions);
 }

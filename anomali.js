@@ -34,7 +34,7 @@ const KILL_CHAIN_TAGS = [
 
 class Anomali {
   constructor(connectOptions, log) {
-    if (this.log) {
+    if (log) {
       this.log = log;
     } else {
       this.log = {};
@@ -198,7 +198,7 @@ class Anomali {
         api_key: options.apikey,
         term: searchTerm,
         exclude: exclude.join(','),
-        limit: 500
+        limit: 20
       }
     };
 
@@ -279,23 +279,251 @@ class Anomali {
     });
   }
 
+  async addTag(options, tagName, observableId, tlp) {
+    if (!this._isValidTlp(tlp)) {
+      return 'Invalid TLP specified.  TLP must be `white` or `red`';
+    }
+
+    let userInfo = await this.getUserInfo(options);
+    let tag = {
+      tag: tagName,
+      id: observableId,
+      userId: userInfo.userId,
+      orgId: userInfo.orgId,
+      tlp: tlp
+    };
+    return await this._postTag(options, tag);
+  }
+
+  async _postTag(options, record) {
+    let self = this;
+
+    const requestOptions = {
+      uri: `${options.apiUrl}/api/v1/intelligence/${record.id}/tag/`,
+      method: 'POST',
+      json: true,
+      qs: {
+        username: options.username,
+        api_key: options.apikey
+      },
+      body: {
+        tags: [
+          {
+            name: record.tag,
+            category: 'user',
+            org_id: record.orgId,
+            source_user: '',
+            source_user_id: record.userId,
+            tagger: 'user',
+            tlp: record.tlp
+          }
+        ]
+      }
+    };
+
+    this.log.debug({ requestOptions }, 'addTag');
+
+    return new Promise((resolve, reject) => {
+      self.request(requestOptions, function(err, response, body) {
+        if (err || response.statusCode !== 201) {
+          return reject({ err, response, body });
+        }
+
+        resolve(body);
+      });
+    });
+  }
+
+  async deleteTag(options, observableId, tagId) {
+    let self = this;
+
+    let requestOptions = {
+      uri: `${options.apiUrl}/api/v1/intelligence/${observableId}/tag/${tagId}/`,
+      method: 'DELETE',
+      json: true,
+      qs: {
+        username: options.username,
+        api_key: options.apikey
+      }
+    };
+
+    this.log.debug({ requestOptions: requestOptions }, 'deleteTag');
+
+    return new Promise((resolve, reject) => {
+      self.request(requestOptions, function(err, response, body) {
+        if (err || (response && response.statusCode !== 200)) {
+          return reject({ err, response, body });
+        }
+
+        resolve(body);
+      });
+    });
+  }
+
+  async getObservable(options, observableId) {
+    let self = this;
+
+    let requestOptions = {
+      uri: `${options.apiUrl}/api/v2/intelligence/${observableId}/`,
+      method: 'GET',
+      json: true,
+      qs: {
+        username: options.username,
+        api_key: options.apikey
+      }
+    };
+
+    this.log.debug({ requestOptions: requestOptions }, 'getObservable');
+
+    return new Promise((resolve, reject) => {
+      self.request(requestOptions, function(err, response, body) {
+        if (err || response.statusCode !== 200) {
+          return reject({ err, response, body });
+        }
+
+        resolve(body);
+      });
+    });
+  }
+
+  async createComment(options, observable, comment, tlp) {
+    let self = this;
+
+    let requestOptions = {
+      uri: `${options.apiUrl}/api/v2/intelligence/comments/`,
+      method: 'POST',
+      json: true,
+      qs: {
+        username: options.username,
+        api_key: options.apikey,
+        value: observable
+      },
+      body: {
+        comment: comment,
+        tlp: tlp
+      }
+    };
+
+    this.log.debug({ requestOptions: requestOptions }, 'updateObservable');
+
+    return new Promise((resolve, reject) => {
+      self.request(requestOptions, function(err, response, body) {
+        if (err || response.statusCode !== 201) {
+          return reject({ err, response, body });
+        }
+
+        // Sample Return Body:
+        // {"message": "Comment successfully added", "success": true}
+        resolve(body);
+      });
+    });
+  }
+
+  async updateObservable(options, observableId, payload) {
+    let self = this;
+
+    let requestOptions = {
+      uri: `${options.apiUrl}/api/v2/intelligence/${observableId}/`,
+      method: 'PATCH',
+      json: true,
+      qs: {
+        username: options.username,
+        api_key: options.apikey
+      },
+      body: payload
+    };
+
+    this.log.debug({ requestOptions: requestOptions }, 'updateObservable');
+
+    return new Promise((resolve, reject) => {
+      self.request(requestOptions, function(err, response, body) {
+        if (err || (response && response.statusCode !== 202)) {
+          return reject({ err, response, body });
+        }
+
+        resolve(body);
+      });
+    });
+  }
+
+  async getUserInfo(options) {
+    let self = this;
+
+    let requestOptions = {
+      uri: `${options.apiUrl}/api/v1/user`,
+      method: 'GET',
+      json: true,
+      qs: {
+        username: options.username,
+        api_key: options.apikey
+      }
+    };
+
+    this.log.debug({ requestOptions: requestOptions }, 'getUserInfo');
+
+    return new Promise((resolve, reject) => {
+      self.request(requestOptions, function(err, response, body) {
+        if (err || (response && response.statusCode !== 200)) {
+          return reject({ err, response, body });
+        }
+
+        if (Array.isArray(body.objects) && body.objects.length > 0) {
+          const userObj = body.objects[0];
+          const userId = userObj.api_key.id;
+          const orgId = userObj.organization.id;
+          resolve({ userId, orgId });
+        } else {
+          reject('Unexpected user response body');
+        }
+      });
+    });
+  }
+
   async getTags(options, searchTerm, exclude) {
-    let orgTags = await this.getOrgTags(options, searchTerm, exclude);
+    //let dedupedTags = new Map();
+    this.log.info({ searchTerm, exclude }, 'anomali.getTags');
+
+    this.log.info({isInitialized: this.isInitialized, preferredTags: this.preferredTags}, 'anomali.getTags() - preferredTags');
+
     let filteredPreferredTags = this.preferredTags.filter((tag) => {
       return (
         !exclude.includes(tag.name.toLowerCase()) &&
-        tag.name.toLowerCase().includes(searchTerm.toLowerCase())
+        (searchTerm === '*' || tag.name.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     });
 
-    let searchArray = [];
+    this.log.info({ filteredPreferredTags }, 'anomali.getTags(): filtered preferred tag');
+
+    if (searchTerm === '*') {
+      filteredPreferredTags.sort(this._compareTags);
+      return filteredPreferredTags;
+    }
+
+    let orgTags = await this.getOrgTags(options, searchTerm, exclude);
+    let mergedTags = filteredPreferredTags.concat(orgTags);
+    mergedTags.sort(this._compareTags);
 
     if (searchTerm) {
-      searchArray.push({ isPreferred: false, name: searchTerm });
+      mergedTags.unshift({
+        isNew: true,
+        isPreferred: false,
+        name: searchTerm
+      });
     }
-    let mergedTags = searchArray.concat(filteredPreferredTags.concat(orgTags));
 
     return mergedTags;
+  }
+  _compareTags(a, b) {
+    const tagA = a.name.toLowerCase();
+    const tagB = b.name.toLowerCase();
+
+    let comparison = 0;
+    if (tagA > tagB) {
+      comparison = 1;
+    } else if (tagA < tagB) {
+      comparison = -1;
+    }
+    return comparison;
   }
 }
 
