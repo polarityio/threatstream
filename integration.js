@@ -396,6 +396,13 @@ function validateOptions(userOptions, cb) {
     });
   }
 
+  if (typeof userOptions.apiUrl.value === 'string' && userOptions.apiUrl.value.endsWith('/')) {
+    errors.push({
+      key: 'apiUrl',
+      message: 'The API URL cannot end with a trailing `/`'
+    });
+  }
+
   if (
     typeof userOptions.username.value !== 'string' ||
     (typeof userOptions.username.value === 'string' && userOptions.username.value.length === 0)
