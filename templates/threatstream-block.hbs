@@ -1,13 +1,47 @@
 <div class="details-container">
     {{#each (limit enrichedDetails maxSourcesInBlock) as |item index|}}
+        {{#if showUpdateModal}}
+            <div class="update-modal">
+                <form>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">{{capitalize updateFieldName}}</label>
+                        {{#if (eq updateFieldName "confidence")}}
+                            {{input type="number" class="form-control" value=tmpUpdateValue}}
+                        {{else}}
+                            {{#power-select
+                                    options=severityLevels
+                                    selected=tmpUpdateValue
+                                    searchEnabled=false
+                                    placeholder="Severity"
+                                    onchange=(action (mut tmpUpdateValue)) as |fieldValue|}}
+                                {{fieldValue}}
+                            {{/power-select}}
+                        {{/if}}
+                    </div>
+                    <button type="submit" disabled={{isUpdating}} {{action "updateObservable" item updateFieldName tmpUpdateValue index}} class="float-right btn btn-sm btn-secondary">
+                    {{#if isUpdating}}
+                        {{fa-icon "spinner-third" spin=true fixedWidth=true}}
+                    {{else}}
+                        {{fa-icon "save" fixedWidth=true}}
+                    {{/if}}
+                    Save
+                    </button>
+                    <button type="submit" disabled={{isUpdating}} {{action "showUpdateModal" false updateFieldName}} class="float-right mr-1 btn btn-sm btn-outline-secondary">Cancel</button>
+                </form>
+            </div>
+        {{/if}}
         <div class="item">
             <h1 class="p-title">
                 {{fa-icon "info-circle" fixedWidth=true}} Info
-                <a class="p-link" href="{{block.userOptions.url}}/detail/ip/{{item.value}}">&nbsp;(View in TS)</a>
+                <a class="p-link" href="{{block.userOptions.uiUrl}}/detail/ip/{{item.value}}">&nbsp;(View in TS)</a>
             </h1>
             <div>
                 <span class="p-key">Status: </span>
                 <span class="p-value">{{item.statusDisplay}}</span>
+            </div>
+            <div>
+                <span class="p-key">TLP: </span>
+                <span class="p-value" style="color:{{item.tlpColor}}">{{item.tlp}}</span>
             </div>
             <div>
                 <span class="p-key">Type: </span>
@@ -18,7 +52,7 @@
                 <span class="p-value">{{item.threatscore}}</span>
             </div>
             <div>
-                <span class="p-key">Confidence: </span>
+                <span class="p-key" {{action "showUpdateModal" true "confidence" item.confidence}}>Confidence {{fa-icon "edit" fixedWidth=true class="edit-icon"}}: </span>
                 <span class="p-value"
                       style="color:{{item.confidenceColor}}; font-weight: bold">{{item.confidence}}</span>
             </div>
@@ -27,7 +61,7 @@
                 <span class="p-value">{{item.threat_type}}</span>
             </div>
             <div>
-                <span class="p-key">Severity: </span>
+                <span class="p-key"  {{action "showUpdateModal" true "severity" item.meta.severity}}>Severity  {{fa-icon "edit" fixedWidth=true class="edit-icon"}}: </span>
                 <span class="p-value"
                       style="color:{{item.meta.severityColor}}; font-weight: bold">{{item.meta.severity}}</span>
             </div>
@@ -55,29 +89,78 @@
             {{/if}}
 
             <h1 class="p-title">
-                {{fa-icon "tags" fixedWidth=true}} Tags
+                {{fa-icon "tags" fixedWidth=true}} Tags<span class="ml-1">{{#if deletingTag}}{{fa-icon "spinner-third" spin=true fixedWidth=true}}{{/if}}</span>
             </h1>
             <div class="tag-container">
-                {{#each (limit item.tags maxTagsInBlock) as |tag|}}
-                    <a title="{{block.userOptions.url}}/search?status=active&tags={{tag.name}}"
-                       href="{{block.userOptions.url}}/search?status=active&tags={{tag.name}}" class="tag">{{tag.name}}</a>
+                {{#each (limit item.tags maxTagsInBlock) as |tag tagIndex|}}
+                    <a href="{{block.userOptions.uiUrl}}/search?status=active&tags={{tag.name}}" class="tag {{if (eq tag.tlp "red") "tlp-red"}}">
+                        {{tag.name}}
+                        <button class="delete-tag-btn" {{action "deleteTag" item tag.id index tagIndex}} disabled={{deletingTag}}>
+                            {{fa-icon "times" fixedWidth=true}}
+                        </button>
+                    </a>
                 {{/each}}
-                <div class="p-footnote">(Tags link to your ThreatStream instance)</div>
+               {{!-- <div class="p-footnote">(Tags link to your ThreatStream instance)</div>--}}
                 {{#if (gt item.additionalTagCount 0)}}
                     <span class="integration-summary-tag integration-border-color">
                         <span>+{{item.additionalTagCount}}</span>
                     </span>
                 {{/if}}
-                {{!--
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Tag to Add" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                    {{input type="text" value=newTag}}
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" {{action "addTag" item.id}}>Add Tag</button>
-                    </div>
+
+                <div class="edit-tags-btn-container">
+                    <span class="p-action" {{action "editTags"}}>Add Tags {{fa-icon (if editTags "caret-down" "caret-up") fixedWidth=true}}</span>
                 </div>
-                {{actionMessage}}
-                --}}
+
+                {{#if editTags}}
+                    <div class="edit-tags-container">
+                        <div class="edit-visibility-container">
+                            {{#power-select
+                                    options=tagVisibility
+                                    selected=selectedTagVisibility
+                                    searchEnabled=false
+                                    placeholder="Visibility"
+                                    onchange=(action (mut selectedTagVisibility)) as |visibility|}}
+                                {{visibility.name}}
+                            {{/power-select}}
+                        </div>
+                        <div class="input-group add-tag-container">
+                            {{#power-select
+                                    triggerClass="form-control"
+                                    selected=selectedTag
+                                    options=initialTags
+                                    searchEnabled=true
+                                    search=(action "searchTags")
+                                    placeholder="Add Tag"
+                                    searchMessage="Loading Tags ..."
+                                    searchPlaceholder="Search tags"
+                                    closeOnSelect=true
+                                    onopen=(action "searchTags" "" item)
+                                    onchange=(action (mut selectedTag)) as |tag|}}
+                                {{tag.name}}
+                                {{#if tag.isNew}}
+                                    {{fa-icon "plus-circle" fixedWidth=true}}
+                                {{/if}}
+                                {{#if tag.isPreferred}}
+                                    {{fa-icon "check-circle" fixedWidth=true}}
+                                {{/if}}
+                            {{/power-select}}
+
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" disabled={{addingTag}} type="button" {{action "addTag" item index}}>
+                                    {{#if addingTag}}
+                                        {{fa-icon "spinner-third" spin=true fixedWidth=true}}
+                                    {{else}}
+                                        {{fa-icon "plus" fixedWidth=true}}
+                                    {{/if}}
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-footnote mt-1">(Enter '*' to see all preferred tags)</div>
+                    </div>
+                {{/if}}
+                {{#if errorMessage}}
+                    <div class="error-box">{{fa-icon "exclamation-triangle" fixedWidth=true}}  {{errorMessage}}</div>
+                {{/if}}
             </div>
             <div style="clear:both; margin-bottom: 5px;"></div>
         </div>

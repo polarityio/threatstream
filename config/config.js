@@ -101,10 +101,19 @@ module.exports = {
      */
     options: [
         {
-            key: "url",
-            name: "Anomali ThreatStream Server URL",
-            description: "The URL for your ThreatStream server which should include the schema (i.e., http, https) and port if required",
-            default: "",
+            key: "apiUrl",
+            name: "Anomali ThreatStream API Server URL",
+            description: "The URL for your ThreatStream API server which should include the schema (i.e., http, https) and port if required",
+            default: "https://api.threatstream.com",
+            type: "text",
+            userCanEdit: false,
+            adminOnly: true
+        },
+        {
+            key: "uiUrl",
+            name: "Anomali ThreatStream UI Server URL",
+            description: "The URL for your ThreatStream UI server which should include the schema (i.e., http, https) and port if required",
+            default: "https://ui.threatstream.com",
             type: "text",
             userCanEdit: false,
             adminOnly: true
