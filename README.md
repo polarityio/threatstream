@@ -6,15 +6,21 @@ Polarity's ThreatStream integration gives users access to automated IPv4 lookups
 
 To learn more about Anomali ThreatStream please see their official website at [https://www.anomali.com/platform/threatstream](https://www.anomali.com/platform/threatstream)
 
-| ![image](https://user-images.githubusercontent.com/306319/45698055-24cee600-bb35-11e8-9ed9-4d07f26ed23e.png)  |
+| ![image](images/overlay.png)  |
 |---|
 |*Anomali ThreatStream Example* |
 
 ## ThreatStream Integration Options
 
-### Anomali ThreatStream Server URL
+### Anomali ThreatStream API Server URL
 
-The URL for your ThreatStream server which should include the schema (i.e., http, https) and port if required.  For example `https://threatstream.mycompany.com`
+The URL for your ThreatStream API server which should include the schema (i.e., http, https) and port if required.  For example `https://api.threatstream.com`
+
+> Note that the API server value cannot end with a trailing `/`.
+
+### Anomali ThreatStream UI Server URL
+
+The URL for your ThreatStream UI server which should include the schema (i.e., http, https) and port if required.  For example `https://ui.threatstream.com`
 
 ### Username
 
