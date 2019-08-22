@@ -104,8 +104,11 @@ function _doLookup(entityGroups, entityLookup, types, options, cb) {
             lookupResults.push({
               entity: entityLookup[indicator.toLowerCase()],
               data: {
-                summary: ['test'],
-                details: indicatorGroup
+                summary: [],
+                details: {
+                  intelligence: indicatorGroup,
+                  comments: []
+                }
               }
             });
           } else {
@@ -350,6 +353,16 @@ function _createJsonErrorObject(msg, pointer, httpCode, code, title, meta) {
   return error;
 }
 
+async function onDetails(resultObject, options, cb) {
+  try {
+    let comments = await anomali.getComments(options, resultObject.entity.value.toLowerCase());
+    resultObject.data.details.comments = comments;
+    cb(null, resultObject.data);
+  } catch (error) {
+    cb(error);
+  }
+}
+
 function startup(logger) {
   Logger = logger;
 
@@ -379,7 +392,7 @@ function startup(logger) {
     requestOptions.rejectUnauthorized = config.request.rejectUnauthorized;
   }
 
-  anomali = new Anomali(requestOptions, Logger);
+  anomali = new Anomali(config.request, Logger);
 
   requestWithDefaults = request.defaults(requestOptions);
 }
@@ -458,7 +471,7 @@ function validateOptions(userOptions, cb) {
 module.exports = {
   doLookup: createEntityGroups,
   startup: startup,
-  // Disabled for now
+  onDetails: onDetails,
   onMessage: onMessage,
   validateOptions: validateOptions
 };

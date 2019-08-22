@@ -1,36 +1,44 @@
-<div class="details-container">
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a {{action "changeTab" "details"}} class="nav-link {{if (or (eq activeTab "details")(not activeTab)) "active"}}" href="#">Details</a>
+    </li>
+    <li class="nav-item">
+        <a {{action "changeTab" "comments"}} class="nav-link {{if (eq activeTab "comments") "active"}}" href="#">Comments ({{comments.length}})</a>
+    </li>
+</ul>
+{{#if (eq activeTab "details")}}
     {{#each (limit enrichedDetails maxSourcesInBlock) as |item index|}}
-        {{#if showUpdateModal}}
-            <div class="update-modal">
-                <form>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">{{capitalize updateFieldName}}</label>
-                        {{#if (eq updateFieldName "confidence")}}
-                            {{input type="number" class="form-control" value=tmpUpdateValue}}
-                        {{else}}
-                            {{#power-select
-                                    options=severityLevels
-                                    selected=tmpUpdateValue
-                                    searchEnabled=false
-                                    placeholder="Severity"
-                                    onchange=(action (mut tmpUpdateValue)) as |fieldValue|}}
-                                {{fieldValue}}
-                            {{/power-select}}
-                        {{/if}}
-                    </div>
-                    <button type="submit" disabled={{isUpdating}} {{action "updateObservable" item updateFieldName tmpUpdateValue index}} class="float-right btn btn-sm btn-secondary">
-                    {{#if isUpdating}}
-                        {{fa-icon "spinner-third" spin=true fixedWidth=true}}
-                    {{else}}
-                        {{fa-icon "save" fixedWidth=true}}
-                    {{/if}}
-                    Save
-                    </button>
-                    <button type="submit" disabled={{isUpdating}} {{action "showUpdateModal" false updateFieldName}} class="float-right mr-1 btn btn-sm btn-outline-secondary">Cancel</button>
-                </form>
-            </div>
-        {{/if}}
         <div class="item">
+            {{#if item.__showUpdateModal}}
+                <div class="update-modal">
+                    <form>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">{{capitalize updateFieldName}}</label>
+                            {{#if (eq updateFieldName "confidence")}}
+                                {{input type="number" class="form-control" value=tmpUpdateValue}}
+                            {{else}}
+                                {{#power-select
+                                        options=severityLevels
+                                        selected=tmpUpdateValue
+                                        searchEnabled=false
+                                        placeholder="Severity"
+                                        onchange=(action (mut tmpUpdateValue)) as |fieldValue|}}
+                                    {{fieldValue}}
+                                {{/power-select}}
+                            {{/if}}
+                        </div>
+                        <button type="submit" disabled={{isUpdating}} {{action "updateObservable" item updateFieldName tmpUpdateValue index}} class="float-right btn btn-sm btn-secondary">
+                        {{#if isUpdating}}
+                            {{fa-icon "spinner-third" spin=true fixedWidth=true}}
+                        {{else}}
+                            {{fa-icon "save" fixedWidth=true}}
+                        {{/if}}
+                        Save
+                        </button>
+                        <button type="submit" disabled={{isUpdating}} {{action "showUpdateModal" false updateFieldName tmpUpdateValue index}} class="float-right mr-1 btn btn-sm btn-outline-secondary">Cancel</button>
+                    </form>
+                </div>
+            {{/if}}
             <h1 class="p-title">
                 {{fa-icon "info-circle" fixedWidth=true}} Info
                 <a class="p-link" href="{{block.userOptions.uiUrl}}/detail/ip/{{item.value}}">&nbsp;(View in TS)</a>
@@ -52,7 +60,7 @@
                 <span class="p-value">{{item.threatscore}}</span>
             </div>
             <div>
-                <span class="p-key" {{action "showUpdateModal" true "confidence" item.confidence}}>Confidence {{fa-icon "edit" fixedWidth=true class="edit-icon"}}: </span>
+                <span class="p-key" {{action "showUpdateModal" true "confidence" item.confidence index}}>Confidence {{fa-icon "edit" fixedWidth=true class="edit-icon"}}: </span>
                 <span class="p-value"
                       style="color:{{item.confidenceColor}}; font-weight: bold">{{item.confidence}}</span>
             </div>
@@ -61,7 +69,7 @@
                 <span class="p-value">{{item.threat_type}}</span>
             </div>
             <div>
-                <span class="p-key"  {{action "showUpdateModal" true "severity" item.meta.severity}}>Severity  {{fa-icon "edit" fixedWidth=true class="edit-icon"}}: </span>
+                <span class="p-key"  {{action "showUpdateModal" true "severity" item.meta.severity index}}>Severity  {{fa-icon "edit" fixedWidth=true class="edit-icon"}}: </span>
                 <span class="p-value"
                       style="color:{{item.meta.severityColor}}; font-weight: bold">{{item.meta.severity}}</span>
             </div>
@@ -89,13 +97,13 @@
             {{/if}}
 
             <h1 class="p-title">
-                {{fa-icon "tags" fixedWidth=true}} Tags<span class="ml-1">{{#if deletingTag}}{{fa-icon "spinner-third" spin=true fixedWidth=true}}{{/if}}</span>
+                {{fa-icon "tags" fixedWidth=true}} Tags<span class="ml-1">{{#if item.__deletingTag}}{{fa-icon "spinner-third" spin=true fixedWidth=true}}{{/if}}</span>
             </h1>
             <div class="tag-container">
                 {{#each (limit item.tags maxTagsInBlock) as |tag tagIndex|}}
                     <a href="{{block.userOptions.uiUrl}}/search?status=active&tags={{tag.name}}" class="tag {{if (eq tag.tlp "red") "tlp-red"}}">
                         {{tag.name}}
-                        <button class="delete-tag-btn" {{action "deleteTag" item tag.id index tagIndex}} disabled={{deletingTag}}>
+                        <button class="delete-tag-btn" {{action "deleteTag" item tag.id index tagIndex}} disabled={{item.__deletingTag}}>
                             {{fa-icon "times" fixedWidth=true}}
                         </button>
                     </a>
@@ -108,25 +116,25 @@
                 {{/if}}
 
                 <div class="edit-tags-btn-container">
-                    <span class="p-action" {{action "editTags"}}>Add Tags {{fa-icon (if editTags "caret-down" "caret-up") fixedWidth=true}}</span>
+                    <span class="p-action" {{action "editTags" index}}>Add Tags {{fa-icon (if editTags "caret-down" "caret-up") fixedWidth=true}}</span>
                 </div>
 
-                {{#if editTags}}
+                {{#if item.__editTags}}
                     <div class="edit-tags-container">
                         <div class="edit-visibility-container">
                             {{#power-select
                                     options=tagVisibility
-                                    selected=selectedTagVisibility
+                                    selected=item.__selectedTagVisibility
                                     searchEnabled=false
                                     placeholder="Visibility"
-                                    onchange=(action (mut selectedTagVisibility)) as |visibility|}}
+                                    onchange=(action (mut item.__selectedTagVisibility)) as |visibility|}}
                                 {{visibility.name}}
                             {{/power-select}}
                         </div>
                         <div class="input-group add-tag-container">
                             {{#power-select
                                     triggerClass="form-control"
-                                    selected=selectedTag
+                                    selected=item.__selectedTag
                                     options=initialTags
                                     searchEnabled=true
                                     search=(action "searchTags")
@@ -135,7 +143,7 @@
                                     searchPlaceholder="Search tags"
                                     closeOnSelect=true
                                     onopen=(action "searchTags" "" item)
-                                    onchange=(action (mut selectedTag)) as |tag|}}
+                                    onchange=(action (mut item.__selectedTag)) as |tag|}}
                                 {{tag.name}}
                                 {{#if tag.isNew}}
                                     {{fa-icon "plus-circle" fixedWidth=true}}
@@ -146,8 +154,8 @@
                             {{/power-select}}
 
                             <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" disabled={{addingTag}} type="button" {{action "addTag" item index}}>
-                                    {{#if addingTag}}
+                                <button class="btn btn-outline-secondary" disabled={{or item.__addingTag (not item.__selectedTag)}} type="button" {{action "addTag" item index}}>
+                                    {{#if item.__addingTag}}
                                         {{fa-icon "spinner-third" spin=true fixedWidth=true}}
                                     {{else}}
                                         {{fa-icon "plus" fixedWidth=true}}
@@ -165,9 +173,34 @@
             <div style="clear:both; margin-bottom: 5px;"></div>
         </div>
     {{/each}}
-    {{#if (gt additionalSourcesCount 0)}}
-        <div class="additional-sources-count">
-            +{{additionalSourcesCount}} more {{if (eq additionalSourcesCount 1) "source" "sources"}}
+{{/if}}
+{{#if (eq activeTab "comments")}}
+    {{#each comments as |comment commentIndex|}}
+        <div class="comment">
+            <div class="header">
+                <div class="email">
+                    {{comment.user.email}}
+                </div>
+                <div>
+                    <span class="organization">({{comment.user.organization.name}})</span>
+                    <span class="date"> on {{moment-format comment.date "YYYY-MM-DD HH:mm:ss z" timeZone=timezone}}</span>
+                </div>
+            </div>
+            <div class="body">
+                <div>
+                    {{{comment.comment}}}
+                </div>
+                <div class="tlp-container">
+                    <span class="tlp {{if (eq comment.tlp "red") "tlp-red" "tlp-white"}}">
+                        {{comment.tlp}}
+                    </span>
+                </div>
+            </div>
         </div>
-    {{/if}}
-</div>
+    {{/each}}
+{{/if}}
+{{#if (gt additionalSourcesCount 0)}}
+    <div class="additional-sources-count">
+        +{{additionalSourcesCount}} more {{if (eq additionalSourcesCount 1) "source" "sources"}}
+    </div>
+{{/if}}
