@@ -3,7 +3,13 @@
         <a {{action "changeTab" "details"}} class="nav-link {{if (or (eq activeTab "details")(not activeTab)) "active"}}" href="#">Details</a>
     </li>
     <li class="nav-item">
-        <a {{action "changeTab" "comments"}} class="nav-link {{if (eq activeTab "comments") "active"}}" href="#">Comments ({{comments.length}})</a>
+        <a {{action "changeTab" "comments"}} class="nav-link {{if (eq activeTab "comments") "active"}}" href="#">Comments
+            {{#if block.isLoadingDetails}}
+                ({{fa-icon "spinner-third" fixedWidth=true spin=true}})
+            {{else}}
+                ({{comments.length}})
+            {{/if}}
+        </a>
     </li>
 </ul>
 {{#if (eq activeTab "details")}}
