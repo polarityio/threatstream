@@ -58,40 +58,29 @@ class Anomali {
   _getRequestDefaults(connectOptions) {
     let defaults = {};
 
-    //this.logger.info(connectOptions);
-
-    if (typeof connectOptions !== 'undefined' && typeof connectOptions.request !== 'undefined') {
-      if (
-        typeof connectOptions.request.cert === 'string' &&
-        connectOptions.request.cert.length > 0
-      ) {
-        defaults.cert = fs.readFileSync(connectOptions.request.cert);
+    if (typeof connectOptions !== 'undefined') {
+      if (typeof connectOptions.cert === 'string' && connectOptions.cert.length > 0) {
+        defaults.cert = fs.readFileSync(connectOptions.cert);
       }
 
-      if (typeof connectOptions.request.key === 'string' && connectOptions.request.key.length > 0) {
-        defaults.key = fs.readFileSync(connectOptions.request.key);
+      if (typeof connectOptions.key === 'string' && connectOptions.key.length > 0) {
+        defaults.key = fs.readFileSync(connectOptions.key);
       }
 
-      if (
-        typeof connectOptions.request.passphrase === 'string' &&
-        connectOptions.request.passphrase.length > 0
-      ) {
-        defaults.passphrase = connectOptions.request.passphrase;
+      if (typeof connectOptions.passphrase === 'string' && connectOptions.passphrase.length > 0) {
+        defaults.passphrase = connectOptions.passphrase;
       }
 
-      if (typeof connectOptions.request.ca === 'string' && connectOptions.request.ca.length > 0) {
-        defaults.ca = fs.readFileSync(connectOptions.request.ca);
+      if (typeof connectOptions.ca === 'string' && connectOptions.ca.length > 0) {
+        defaults.ca = fs.readFileSync(connectOptions.ca);
       }
 
-      if (
-        typeof connectOptions.request.proxy === 'string' &&
-        connectOptions.request.proxy.length > 0
-      ) {
-        defaults.proxy = connectOptions.request.proxy;
+      if (typeof connectOptions.proxy === 'string' && connectOptions.proxy.length > 0) {
+        defaults.proxy = connectOptions.proxy;
       }
 
-      if (typeof connectOptions.request.rejectUnauthorized === 'boolean') {
-        defaults.rejectUnauthorized = connectOptions.request.rejectUnauthorized;
+      if (typeof connectOptions.rejectUnauthorized === 'boolean') {
+        defaults.rejectUnauthorized = connectOptions.rejectUnauthorized;
       }
     }
 
@@ -99,10 +88,37 @@ class Anomali {
 
     return defaults;
   }
+
+  async getComments(options, indicatorValue) {
+    let self = this;
+    let requestOptions = {
+      uri: `${options.apiUrl}/api/v2/intelligence/comments/`,
+      method: 'GET',
+      json: true,
+      qs: {
+        username: options.username,
+        api_key: options.apikey,
+        value: indicatorValue
+      }
+    };
+
+    this.log.debug({ requestOptions: requestOptions }, 'getComments');
+
+    return new Promise((resolve, reject) => {
+      self.request(requestOptions, function(err, response, body) {
+        if (err) {
+          return reject({ err, response, body });
+        }
+
+        resolve(body.comments);
+      });
+    });
+  }
+
   async getUserInfo(options) {
     let self = this;
     let requestOptions = {
-      uri: `${options.url}/api/v1/user`,
+      uri: `${options.apiUrl}/api/v1/user`,
       method: 'GET',
       json: true,
       qs: {
@@ -483,7 +499,10 @@ class Anomali {
     //let dedupedTags = new Map();
     this.log.info({ searchTerm, exclude }, 'anomali.getTags');
 
-    this.log.info({isInitialized: this.isInitialized, preferredTags: this.preferredTags}, 'anomali.getTags() - preferredTags');
+    this.log.info(
+      { isInitialized: this.isInitialized, preferredTags: this.preferredTags },
+      'anomali.getTags() - preferredTags'
+    );
 
     let filteredPreferredTags = this.preferredTags.filter((tag) => {
       return (
