@@ -68,7 +68,7 @@ module.exports = {
         // Provide the key passphrase if required.  Leave an empty string to ignore this option.
         // Relative paths are relative to the ThreatStream integration's root directory
         passphrase: '',
-        // Provide the Certificate Authority. Leave an empty string to ignore this option.
+        // Provide the path to your Certificate Authority. Leave an empty string to ignore this option.
         // Relative paths are relative to the ThreatStream integration's root directory
         ca: '',
         // An HTTP proxy to be used. Supports proxy Auth with Basic Auth, identical to support for
@@ -137,11 +137,33 @@ module.exports = {
             adminOnly: false
         },
         {
-            key: "minimumSeverity",
+            key: 'minimumSeverity',
             name: "Minimum Severity Level",
             description: "The minimum severity level required for indicators to be displayed [low, medium, high, very-high]",
-            default: 'low',
-            type: "text",
+            default: {
+                value: 'low',
+                display: 'Low'
+            },
+            type: 'select',
+            options: [
+                {
+                    value: 'low',
+                    display: 'Low'
+                },
+                {
+                    value: 'medium',
+                    display: 'Medium'
+                },
+                {
+                    value: 'high',
+                    display: 'High'
+                },
+                {
+                    value: 'very-high',
+                    display: 'Very High'
+                }
+            ],
+            multiple: false,
             userCanEdit: true,
             adminOnly: false
         },

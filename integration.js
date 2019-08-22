@@ -190,7 +190,7 @@ function _handleRequestError(err, response, body, options, expectedHttpStatusCod
 
 function _lookupEntity(entitiesArray, entityLookup, types, options, done) {
   let severityQueryString = SEVERITY_LEVELS_QUERY_FORMAT.slice(
-    SEVERITY_LEVELS.indexOf(options.minimumSeverity)
+    SEVERITY_LEVELS.indexOf(options.minimumSeverity.value)
   ).join(' OR ');
   let activeQueryString = '';
   if (options.activeOnly === true) {
@@ -437,20 +437,15 @@ function validateOptions(userOptions, cb) {
   }
 
   if (
-    typeof userOptions.minimumSeverity.value !== 'string' ||
-    (typeof userOptions.minimumSeverity.value === 'string' &&
-      userOptions.minimumSeverity.value.length === 0)
+    typeof userOptions.minimumSeverity.value.value !== 'string' ||
+    (typeof userOptions.minimumSeverity.value.value === 'string' &&
+      userOptions.minimumSeverity.value.value.length === 0)
   ) {
     errors.push({
       key: 'minimumSeverity',
       message: 'You must provide a minimum severity level'
     });
-  } else if (SEVERITY_LEVELS.indexOf(userOptions.minimumSeverity.value) < 0) {
-    errors.push({
-      key: 'minimumSeverity',
-      message: 'The minimum severity level must be "low", "medium", "high", or "very-high"'
-    });
-  }
+  } 
 
   let minConfidence = Number(userOptions.minimumConfidence.value);
   if (userOptions.minimumConfidence.value.length === 0 || !_.isInteger(minConfidence)) {
