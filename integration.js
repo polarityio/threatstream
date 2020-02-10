@@ -196,6 +196,10 @@ function _lookupEntity(entitiesArray, entityLookup, types, options, done) {
   if (options.activeOnly === true) {
     activeQueryString = ' AND status=active ';
   }
+  let visibilityQueryString = '';
+  if(options.searchMyOrg === true){
+    visibilityQueryString = ' AND is_public=false '
+  }
 
   //do the lookup
   const requestOptions = {
@@ -207,7 +211,7 @@ function _lookupEntity(entitiesArray, entityLookup, types, options, done) {
       q: `(${entitiesArray.join(' OR ')}) AND confidence>=${
         options.minimumConfidence
       } AND (${severityQueryString}) 
-        AND (${types.join(' OR ')}) ${activeQueryString}`,
+        AND (${types.join(' OR ')}) ${activeQueryString} ${visibilityQueryString}`,
       limit: 50
     },
     json: true
@@ -445,7 +449,7 @@ function validateOptions(userOptions, cb) {
       key: 'minimumSeverity',
       message: 'You must provide a minimum severity level'
     });
-  } 
+  }
 
   let minConfidence = Number(userOptions.minimumConfidence.value);
   if (userOptions.minimumConfidence.value.length === 0 || !_.isInteger(minConfidence)) {
