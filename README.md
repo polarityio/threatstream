@@ -1,7 +1,5 @@
 # Polarity Anomali ThreatStream Integration
 
-![image](https://img.shields.io/badge/status-beta-green.svg)
-
 Polarity's ThreatStream integration gives users access to automated IPv4 lookups within Anomali's ThreatStream platform..
 
 To learn more about Anomali ThreatStream please see their official website at [https://www.anomali.com/platform/threatstream](https://www.anomali.com/platform/threatstream)
@@ -43,6 +41,10 @@ An integer value between 0 and 100 which specifies the minimum confidence level 
 ### Active Threats Only
 
 If set to true, only threats which have a status of `Active` will be displayed.
+
+### Search My Organization Only
+
+If checked, only your organization's data will be searched (i.e., public indicators will not be searched)
 
 ### Ignore Private IPs
 

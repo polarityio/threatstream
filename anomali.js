@@ -218,7 +218,7 @@ class Anomali {
       }
     };
 
-    this.log.info(requestOptions);
+    this.log.debug(requestOptions);
 
     return new Promise((resolve, reject) => {
       self.request(requestOptions, (err, response, body) => {
@@ -271,7 +271,7 @@ class Anomali {
       }
     };
 
-    this.log.info(requestOptions);
+    this.log.debug(requestOptions);
 
     return new Promise((resolve, reject) => {
       self.request(requestOptions, (err, response, body) => {
@@ -496,10 +496,9 @@ class Anomali {
   }
 
   async getTags(options, searchTerm, exclude) {
-    //let dedupedTags = new Map();
-    this.log.info({ searchTerm, exclude }, 'anomali.getTags');
+    this.log.debug({ searchTerm, exclude }, 'anomali.getTags');
 
-    this.log.info(
+    this.log.debug(
       { isInitialized: this.isInitialized, preferredTags: this.preferredTags },
       'anomali.getTags() - preferredTags'
     );
@@ -511,7 +510,7 @@ class Anomali {
       );
     });
 
-    this.log.info({ filteredPreferredTags }, 'anomali.getTags(): filtered preferred tag');
+    this.log.debug({ filteredPreferredTags }, 'anomali.getTags(): filtered preferred tag');
 
     if (searchTerm === '*') {
       filteredPreferredTags.sort(this._compareTags);
