@@ -1,5 +1,5 @@
 {{#if (gt itypes.length 0)}}
-    <span class="integration-summary-tag integration-background-color integration-border-color">
+    <span {{on "click" (optional this.scrollToIntegration)}} class="integration-summary-tag integration-background-color integration-border-color">
         <span class="acronym integration-text-bold-color">{{block.acronym}}</span>
         <span class="integration-text-color">
         {{#each itypes as |itype index|}}
@@ -10,35 +10,35 @@
 {{/if}}
 
 {{#unless (eq highestThreatScore -1)}}
-    <span class="integration-summary-tag integration-background-color integration-border-color">
+    <span {{on "click" (optional this.scrollToIntegration)}} class="integration-summary-tag integration-background-color integration-border-color">
         <span class="acronym integration-text-bold-color">{{block.acronym}}</span>
         <span class="integration-text-color">{{highestThreatScore}}</span>
     </span>
 {{/unless}}
 
 {{#unless (eq highestSeverity "na")}}
-    <span class="integration-summary-tag integration-background-color integration-border-color">
+    <span {{on "click" (optional this.scrollToIntegration)}} class="integration-summary-tag integration-background-color integration-border-color">
         <span class="acronym integration-text-bold-color">{{block.acronym}}</span>
         <span class="integration-text-color">{{highestSeverity}}</span>
     </span>
 {{/unless}}
 
 {{#unless isSingleIndicator}}
-    <span class="integration-summary-tag integration-background-color integration-border-color">
+    <span {{on "click" (optional this.scrollToIntegration)}} class="integration-summary-tag integration-background-color integration-border-color">
         <span class="acronym integration-text-bold-color">{{block.acronym}}</span>
         <span class="integration-text-color">{{numSources}} sources</span>
     </span>
 {{/unless}}
 
 {{#each (limit allTags maxTagsInSummary) as |tag|}}
-    <span class="integration-summary-tag integration-background-color integration-border-color">
+    <span {{on "click" (optional this.scrollToIntegration)}} class="integration-summary-tag integration-background-color integration-border-color">
         <span class="acronym integration-text-bold-color">{{block.acronym}}</span>
         <span class="integration-text-color">{{tag.name}}</span>
     </span>
 {{/each}}
 
 {{#if (gt additionalTagCount 0)}}
-    <span class="integration-summary-tag integration-background-color integration-border-color">
+    <span {{on "click" (optional this.scrollToIntegration)}} class="integration-summary-tag integration-background-color integration-border-color">
         <span class="acronym integration-text-bold-color">{{block.acronym}}</span>
         <span class="integration-text-color">+{{additionalTagCount}}</span>
     </span>
