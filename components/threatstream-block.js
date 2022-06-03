@@ -52,6 +52,8 @@ polarity.export = PolarityComponent.extend({
       if (item.status) {
         if (item.status === 'active') {
           item.statusDisplay = 'Active';
+        } else if (item.status === 'falsepos') {
+          item.statusDisplay = 'False Positive';
         } else {
           item.statusDisplay = 'Inactive';
         }
