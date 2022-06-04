@@ -21,10 +21,14 @@ polarity.export = PolarityComponent.extend({
   numSources: Ember.computed('intelligence.length', function () {
     return this.get('intelligence.length');
   }),
-  statuses: Ember.computed('intelligence', function(){
+  statuses: Ember.computed('intelligence', function () {
     const statuses = new Set();
     this.get('intelligence').forEach((item) => {
-      statuses.add(item.status);
+      if (item.status === 'falsepos') {
+        statuses.add('false positive');
+      } else {
+        statuses.add(item.status);
+      }
     });
     return [...statuses].join(', ');
   }),
