@@ -2,7 +2,7 @@ polarity.export = PolarityComponent.extend({
   details: Ember.computed.alias('block.data.details'),
   intelligence: Ember.computed.alias('details.intelligence'),
   comments: Ember.computed.alias('details.comments'),
-  timezone: Ember.computed('Intl', function() {
+  timezone: Ember.computed('Intl', function () {
     return Intl.DateTimeFormat().resolvedOptions().timeZone;
   }),
   initialTags: [],
@@ -19,23 +19,23 @@ polarity.export = PolarityComponent.extend({
   maxTagsInBlock: 10,
   // This is the number of sources an indicator can have (i.e., how many results were returned for a single indicator)
   maxSourcesInBlock: 5,
-  additionalSourcesCount: Ember.computed('intelligence.length', function() {
+  additionalSourcesCount: Ember.computed('intelligence.length', function () {
     if (this.get('intelligence.length') > this.get('maxSourcesInBlock')) {
       return this.get('intelligence.length') - this.get('maxSourcesInBlock');
     } else {
       return 0;
     }
   }),
-  isSingleIndicator: Ember.computed('intelligence.length', function() {
+  isSingleIndicator: Ember.computed('intelligence.length', function () {
     return this.get('intelligence.length') === 1;
   }),
-  firstIndicator: Ember.computed('intelligence', function() {
+  firstIndicator: Ember.computed('intelligence', function () {
     return this.get('intelligence')[0];
   }),
-  enrichedDetails: Ember.computed('intelligence', function() {
+  enrichedDetails: Ember.computed('intelligence', function () {
     let self = this;
     let enrichedDetails = [];
-    this.get('intelligence').forEach(function(oldItem) {
+    this.get('intelligence').forEach(function (oldItem) {
       let item = JSON.parse(JSON.stringify(oldItem));
       item.__selectedTagVisibility = { name: 'My Organization', value: 'red' };
       if (Array.isArray(item.tags)) {
@@ -106,7 +106,7 @@ polarity.export = PolarityComponent.extend({
 
     return enrichedDetails;
   }),
-  _searchTags: function(term, resolve, reject) {
+  _searchTags: function (term, resolve, reject) {
     let self = this;
 
     let payload = {
@@ -142,19 +142,19 @@ polarity.export = PolarityComponent.extend({
       });
   },
   actions: {
-    changeTab: function(tabName) {
+    changeTab: function (tabName) {
       this.set('activeTab', tabName);
     },
-    editTags: function(index) {
+    editTags: function (index) {
       this.toggleProperty(`intelligence.${index}.__editTags`);
       this.get('block').notifyPropertyChange('data');
     },
-    searchTags: function(term) {
+    searchTags: function (term) {
       return new Ember.RSVP.Promise((resolve, reject) => {
         Ember.run.debounce(this, this._searchTags, term, resolve, reject, 600);
       });
     },
-    addTag: function(observable, observableIndex) {
+    addTag: function (observable, observableIndex) {
       let self = this;
 
       self.set(`intelligence.${observableIndex}.__addingTag`, true);
@@ -170,7 +170,7 @@ polarity.export = PolarityComponent.extend({
 
       // This is a utility method that will send the payload to the server where it will trigger the integration's `onMessage` method
       this.sendIntegrationMessage(payload)
-        .then(function(result) {
+        .then(function (result) {
           // We set the message property to the result of response.reply
           observable.__selectedTag = '';
           let tags = observable.tags;
@@ -189,7 +189,7 @@ polarity.export = PolarityComponent.extend({
           self.set('intelligence.' + observableIndex + '.tags', tags);
           self.set('actionMessage', JSON.stringify(result, null, 4));
         })
-        .catch(function(err) {
+        .catch(function (err) {
           self._displayError(err);
         })
         .finally(() => {
@@ -197,7 +197,7 @@ polarity.export = PolarityComponent.extend({
           self.get('block').notifyPropertyChange('data');
         });
     },
-    deleteTag: function(observable, tagId, observableIndex) {
+    deleteTag: function (observable, tagId, observableIndex) {
       let self = this;
 
       this.set(`intelligence.${observableIndex}.__deletingTag`, true);
@@ -212,7 +212,7 @@ polarity.export = PolarityComponent.extend({
 
       // This is a utility method that will send the payload to the server where it will trigger the integration's `onMessage` method
       this.sendIntegrationMessage(payload)
-        .then(function(result) {
+        .then(function (result) {
           // We set the message property to the result of response.reply
           let updatedTags = observable.tags.filter((tag) => {
             return tag.id !== tagId;
@@ -229,7 +229,7 @@ polarity.export = PolarityComponent.extend({
           self.get('block').notifyPropertyChange('data');
         });
     },
-    showUpdateModal: function(show, fieldName, fieldValue, index) {
+    showUpdateModal: function (show, fieldName, fieldValue, index) {
       this._closeAllModals();
       this.set('tmpUpdateValue', fieldValue);
       console.info(`intelligence.${index}.__showUpdateModal`);
@@ -237,7 +237,7 @@ polarity.export = PolarityComponent.extend({
       this.set('updateFieldName', fieldName);
       this.get('block').notifyPropertyChange('data');
     },
-    updateObservable: function(observable, fieldName, fieldValue, observableIndex) {
+    updateObservable: function (observable, fieldName, fieldValue, observableIndex) {
       let self = this;
 
       console.info(`Updating ${fieldName} with new value ${fieldValue}`);
@@ -254,7 +254,7 @@ polarity.export = PolarityComponent.extend({
 
       // This is a utility method that will send the payload to the server where it will trigger the integration's `onMessage` method
       this.sendIntegrationMessage(payload)
-        .then(function(observable) {
+        .then(function (observable) {
           self.set('intelligence.' + observableIndex, observable);
         })
         .catch((err) => {

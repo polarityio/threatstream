@@ -20,6 +20,8 @@ The URL for your ThreatStream API server which should include the schema (i.e., 
 
 The URL for your ThreatStream UI server which should include the schema (i.e., http, https) and port if required.  For example `https://ui.threatstream.com`
 
+> !!! This option must be set to "Users can view only".
+
 ### Username
 
 Your Anomali ThreatStream username

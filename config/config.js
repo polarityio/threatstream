@@ -103,7 +103,7 @@ module.exports = {
       key: 'apiUrl',
       name: 'Anomali ThreatStream API Server URL',
       description:
-        'The URL for your ThreatStream API server which should include the schema (i.e., http, https) and port if required',
+        'The URL for your ThreatStream API server which should include the schema (i.e., http, https) and port if required.',
       default: 'https://api.threatstream.com',
       type: 'text',
       userCanEdit: false,
@@ -113,11 +113,11 @@ module.exports = {
       key: 'uiUrl',
       name: 'Anomali ThreatStream UI Server URL',
       description:
-        'The URL for your ThreatStream UI server which should include the schema (i.e., http, https) and port if required',
+        'The URL for your ThreatStream UI server which should include the schema (i.e., http, https) and port if required.  This option must be set to "Users can view only".',
       default: 'https://ui.threatstream.com',
       type: 'text',
       userCanEdit: false,
-      adminOnly: true
+      adminOnly: false
     },
     {
       key: 'username',
@@ -168,8 +168,8 @@ module.exports = {
         }
       ],
       multiple: false,
-      userCanEdit: true,
-      adminOnly: false
+      userCanEdit: false,
+      adminOnly: true
     },
     {
       key: 'minimumConfidence',
@@ -177,8 +177,8 @@ module.exports = {
       description: 'The minimum confidence level required for indicators to be displayed',
       default: 0,
       type: 'number',
-      userCanEdit: true,
-      adminOnly: false
+      userCanEdit: false,
+      adminOnly: true
     },
     {
       key: 'searchMyOrg',
@@ -194,7 +194,7 @@ module.exports = {
       key: 'activeOnly',
       name: 'Active Threats Only',
       description: "If set to true, only threats with a status value of 'active' will be searched",
-      default: true,
+      default: false,
       type: 'boolean',
       userCanEdit: false,
       adminOnly: true

@@ -1,4 +1,4 @@
-const request = require('request');
+const request = require('postman-request');
 const fs = require('fs');
 
 const KILL_CHAIN_TAGS = [
@@ -218,7 +218,7 @@ class Anomali {
       }
     };
 
-    this.log.debug(requestOptions);
+    this.log.debug({ requestOptions }, 'getOrgTags options');
 
     return new Promise((resolve, reject) => {
       self.request(requestOptions, (err, response, body) => {
