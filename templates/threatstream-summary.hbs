@@ -9,17 +9,22 @@
     </span>
 {{/if}}
 
-{{#unless (eq highestThreatScore -1)}}
-    <span {{on "click" (optional this.scrollToIntegration)}} class="integration-summary-tag integration-background-color integration-border-color">
+<span {{on "click" (optional this.scrollToIntegration)}} class="integration-summary-tag integration-background-color integration-border-color">
+  <span class="acronym integration-text-bold-color">{{block.acronym}}</span>
+  <span class="integration-text-color">{{statuses}}</span>
+</span>
+
+{{#unless (eq highestSeverity "na")}}
+  <span {{on "click" (optional this.scrollToIntegration)}} class="integration-summary-tag integration-background-color integration-border-color">
         <span class="acronym integration-text-bold-color">{{block.acronym}}</span>
-        <span class="integration-text-color">{{highestThreatScore}}</span>
+        <span class="integration-text-color">Severity: {{highestSeverity}}</span>
     </span>
 {{/unless}}
 
-{{#unless (eq highestSeverity "na")}}
+{{#unless (eq highestThreatScore -1)}}
     <span {{on "click" (optional this.scrollToIntegration)}} class="integration-summary-tag integration-background-color integration-border-color">
         <span class="acronym integration-text-bold-color">{{block.acronym}}</span>
-        <span class="integration-text-color">{{highestSeverity}}</span>
+        <span class="integration-text-color">ThreatScore: {{highestThreatScore}}</span>
     </span>
 {{/unless}}
 
@@ -33,13 +38,13 @@
 {{#each (limit allTags maxTagsInSummary) as |tag|}}
     <span {{on "click" (optional this.scrollToIntegration)}} class="integration-summary-tag integration-background-color integration-border-color">
         <span class="acronym integration-text-bold-color">{{block.acronym}}</span>
-        <span class="integration-text-color">{{tag.name}}</span>
+        <span class="integration-text-color">{{fa-icon icon="tag" fixedWidth=true title="tag"}}{{tag.name}}</span>
     </span>
 {{/each}}
 
 {{#if (gt additionalTagCount 0)}}
     <span {{on "click" (optional this.scrollToIntegration)}} class="integration-summary-tag integration-background-color integration-border-color">
         <span class="acronym integration-text-bold-color">{{block.acronym}}</span>
-        <span class="integration-text-color">+{{additionalTagCount}}</span>
+        <span class="integration-text-color">+{{additionalTagCount}} tag{{#if (gt additionalTagCount 1)}}s{{/if}}</span>
     </span>
 {{/if}}

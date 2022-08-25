@@ -13,7 +13,7 @@
     </li>
 </ul>
 {{#if (eq activeTab "details")}}
-    {{#each (limit enrichedDetails maxSourcesInBlock) as |item index|}}
+    {{#each (take maxSourcesInBlock enrichedDetails) as |item index|}}
         <div class="item">
             {{#if item.__showUpdateModal}}
                 <div class="update-modal">
@@ -28,7 +28,7 @@
                                         selected=tmpUpdateValue
                                         searchEnabled=false
                                         placeholder="Severity"
-                                        onchange=(action (mut tmpUpdateValue)) as |fieldValue|}}
+                                        onChange=(action (mut tmpUpdateValue)) as |fieldValue|}}
                                     {{fieldValue}}
                                 {{/power-select}}
                             {{/if}}
@@ -55,7 +55,7 @@
             </div>
             <div>
                 <span class="p-key">TLP: </span>
-                <span class="p-value" style="color:{{item.tlpColor}}">{{item.tlp}}</span>
+              <span class="p-value" style="color:{{item.tlpColor}}">{{#if item.tlp}}{{item.tlp}}{{else}}Not Available{{/if}}</span>
             </div>
             <div>
                 <span class="p-key">Type: </span>
@@ -106,7 +106,7 @@
                 {{fa-icon "tags" fixedWidth=true}} Tags<span class="ml-1">{{#if item.__deletingTag}}{{fa-icon "spinner-third" spin=true fixedWidth=true}}{{/if}}</span>
             </h1>
             <div class="tag-container">
-                {{#each (limit item.tags maxTagsInBlock) as |tag tagIndex|}}
+                {{#each (take maxTagsInBlock item.tags) as |tag tagIndex|}}
                     <a href="{{block.userOptions.uiUrl}}/search?status=active&tags={{tag.name}}" class="tag {{if (eq tag.tlp "red") "tlp-red"}}">
                         {{tag.name}}
                         <button class="delete-tag-btn" {{action "deleteTag" item tag.id index tagIndex}} disabled={{item.__deletingTag}}>
@@ -133,7 +133,7 @@
                                     selected=item.__selectedTagVisibility
                                     searchEnabled=false
                                     placeholder="Visibility"
-                                    onchange=(action (mut item.__selectedTagVisibility)) as |visibility|}}
+                                    onChange=(action (mut item.__selectedTagVisibility)) as |visibility|}}
                                 {{visibility.name}}
                             {{/power-select}}
                         </div>
@@ -149,7 +149,7 @@
                                     searchPlaceholder="Search tags"
                                     closeOnSelect=true
                                     onopen=(action "searchTags" "" item)
-                                    onchange=(action (mut item.__selectedTag)) as |tag|}}
+                                    onChange=(action (mut item.__selectedTag)) as |tag|}}
                                 {{tag.name}}
                                 {{#if tag.isNew}}
                                     {{fa-icon "plus-circle" fixedWidth=true}}
