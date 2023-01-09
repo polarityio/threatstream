@@ -1,0 +1,150 @@
+{
+  "name": "Anomali ThreatStream",
+  "acronym": "TS",
+  "description": "Anomali ThreatStream is a Threat Intelligence Platform allowing organizations to access all intelligence feeds and integrate them seamlessly with internal security and IT systems.",
+  "entityTypes": [
+    "IPv4",
+    "IPv6",
+    "email",
+    "MD5",
+    "SHA1",
+    "SHA256",
+    "domain",
+    "url"
+  ],
+  "styles": [
+    "./styles/threatstream.less"
+  ],
+  "block": {
+    "component": {
+      "file": "./components/threatstream-block.js"
+    },
+    "template": {
+      "file": "./templates/threatstream-block.hbs"
+    }
+  },
+  "summary": {
+    "component": {
+      "file": "./components/threatstream-summary.js"
+    },
+    "template": {
+      "file": "./templates/threatstream-summary.hbs"
+    }
+  },
+  "request": {
+    "cert": "",
+    "key": "",
+    "passphrase": "",
+    "ca": "",
+    "proxy": "",
+    "rejectUnauthorized": true
+  },
+  "logging": {
+    "level": "info"
+  },
+  "options": [
+    {
+      "key": "apiUrl",
+      "name": "Anomali ThreatStream API Server URL",
+      "description": "The URL for your ThreatStream API server which should include the schema (i.e., http, https) and port if required.",
+      "default": "https://api.threatstream.com",
+      "type": "text",
+      "userCanEdit": false,
+      "adminOnly": true
+    },
+    {
+      "key": "uiUrl",
+      "name": "Anomali ThreatStream UI Server URL",
+      "description": "The URL for your ThreatStream UI server which should include the schema (i.e., http, https) and port if required.  This option must be set to \"Users can view only\".",
+      "default": "https://ui.threatstream.com",
+      "type": "text",
+      "userCanEdit": false,
+      "adminOnly": false
+    },
+    {
+      "key": "username",
+      "name": "Username",
+      "description": "The username of the ThreatStream user you want the integration to authenticate as",
+      "default": "",
+      "type": "text",
+      "userCanEdit": true,
+      "adminOnly": false
+    },
+    {
+      "key": "apikey",
+      "name": "API Key",
+      "description": "The API Key for the provided username you want the integration to authenticate as",
+      "default": "",
+      "type": "password",
+      "userCanEdit": true,
+      "adminOnly": false
+    },
+    {
+      "key": "minimumSeverity",
+      "name": "Minimum Severity Level",
+      "description": "The minimum severity level required for indicators to be displayed [low, medium, high, very-high]",
+      "default": {
+        "value": "low",
+        "display": "Low"
+      },
+      "type": "select",
+      "options": [
+        {
+          "value": "low",
+          "display": "Low"
+        },
+        {
+          "value": "medium",
+          "display": "Medium"
+        },
+        {
+          "value": "high",
+          "display": "High"
+        },
+        {
+          "value": "very-high",
+          "display": "Very High"
+        }
+      ],
+      "multiple": false,
+      "userCanEdit": false,
+      "adminOnly": true
+    },
+    {
+      "key": "minimumConfidence",
+      "name": "Minimum Confidence Level",
+      "description": "The minimum confidence level required for indicators to be displayed",
+      "default": 0,
+      "type": "number",
+      "userCanEdit": false,
+      "adminOnly": true
+    },
+    {
+      "key": "searchMyOrg",
+      "name": "Search My Organization Only",
+      "description": "If checked, only your organization's data will be searched (i.e., public indicators will not be searched)",
+      "default": true,
+      "type": "boolean",
+      "userCanEdit": false,
+      "adminOnly": true
+    },
+    {
+      "key": "activeOnly",
+      "name": "Active Threats Only",
+      "description": "If set to true, only threats with a status value of 'active' will be searched",
+      "default": false,
+      "type": "boolean",
+      "userCanEdit": false,
+      "adminOnly": true
+    },
+    {
+      "key": "ignorePrivateIps",
+      "name": "Ignore Private IPs",
+      "description": "If set to true, private IPs (RFC 1918 addresses) will not be looked up (includes 127.0.0.1, 0.0.0.0, and 255.255.255.255)",
+      "default": true,
+      "type": "boolean",
+      "userCanEdit": false,
+      "adminOnly": true
+    }
+  ]
+}
