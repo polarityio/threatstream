@@ -1,20 +1,10 @@
 {
   "name": "Anomali ThreatStream",
   "acronym": "TS",
+  "defaultColor": "light-blue",
   "description": "Anomali ThreatStream is a Threat Intelligence Platform allowing organizations to access all intelligence feeds and integrate them seamlessly with internal security and IT systems.",
-  "entityTypes": [
-    "IPv4",
-    "IPv6",
-    "email",
-    "MD5",
-    "SHA1",
-    "SHA256",
-    "domain",
-    "url"
-  ],
-  "styles": [
-    "./styles/threatstream.less"
-  ],
+  "entityTypes": ["IPv4", "IPv6", "email", "MD5", "SHA1", "SHA256", "domain", "url"],
+  "styles": ["./styles/threatstream.less"],
   "block": {
     "component": {
       "file": "./components/threatstream-block.js"
