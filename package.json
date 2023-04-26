@@ -1,6 +1,6 @@
 {
   "name": "AnomaliThreatStream",
-  "version": "3.2.7-beta",
+  "version": "3.2.7",
   "main": "./integration.js",
   "private": true,
   "dependencies": {
