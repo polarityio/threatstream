@@ -25,7 +25,7 @@ module.exports = {
    */
   description:
     'Anomali ThreatStream is a Threat Intelligence Platform allowing organizations to access all intelligence feeds and integrate them seamlessly with internal security and IT systems.',
-  entityTypes: ['IPv4', 'IPv6', 'email', 'md5', 'sha1', 'sha256', 'domain', 'url'],
+  entityTypes: ['IPv4', 'IPv6', 'email', 'MD5', 'SHA1', 'SHA256', 'domain', 'url'],
   /**
    * An array of style files (css or less) that will be included for your integration. Any styles specified in
    * the below files can be used in your custom template.
