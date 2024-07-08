@@ -38,7 +38,7 @@ async function createEntityGroups(entities, options, cb) {
     }
   }
 
-  entities.forEach(function(entity) {
+  entities.forEach(function (entity) {
     if (entityGroup.length >= MAX_ENTITIES_PER_LOOKUP) {
       entityGroups.push(entityGroup);
       entityGroup = [];
@@ -86,10 +86,10 @@ function _doLookup(entityGroups, entityLookup, types, options, cb) {
 
   async.map(
     entityGroups,
-    function(entityGroup, next) {
+    function (entityGroup, next) {
       _lookupEntity(entityGroup, entityLookup, types, options, next);
     },
-    function(err, results) {
+    function (err, results) {
       if (err) {
         cb(err);
         return;
@@ -197,17 +197,18 @@ function _lookupEntity(entitiesArray, entityLookup, types, options, done) {
     activeQueryString = ' AND status=active ';
   }
   let visibilityQueryString = '';
-  if(options.searchMyOrg === true){
-    visibilityQueryString = ' AND is_public=false '
+  if (options.searchMyOrg === true) {
+    visibilityQueryString = ' AND is_public=false ';
   }
 
   //do the lookup
   const requestOptions = {
     uri: `${options.apiUrl}/api/v2/intelligence`,
     method: 'GET',
+    headers: {
+      Authorization: `apikey ${options.username}:${options.apikey}`
+    },
     qs: {
-      username: options.username,
-      api_key: options.apikey,
       q: `(${entitiesArray.join(' OR ')}) AND confidence>=${
         options.minimumConfidence
       } AND (${severityQueryString}) 
@@ -219,8 +220,8 @@ function _lookupEntity(entitiesArray, entityLookup, types, options, done) {
 
   Logger.debug({ requestOptions: requestOptions }, 'Request Options for Lookup');
 
-  requestWithDefaults(requestOptions, function(err, response, body) {
-    _handle200RequestError(err, response, body, options, function(err, body) {
+  requestWithDefaults(requestOptions, function (err, response, body) {
+    _handle200RequestError(err, response, body, options, function (err, body) {
       if (err) {
         Logger.error({ err: err }, 'Error Looking up Entity');
         done(err);
@@ -468,9 +469,9 @@ function validateOptions(userOptions, cb) {
 }
 
 module.exports = {
-  doLookup: createEntityGroups,
-  startup: startup,
-  onDetails: onDetails,
-  onMessage: onMessage,
-  validateOptions: validateOptions
+    doLookup: createEntityGroups,
+    startup: startup,
+    onDetails: onDetails,
+    onMessage: onMessage,
+    validateOptions: validateOptions
 };

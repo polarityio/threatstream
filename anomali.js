@@ -95,9 +95,10 @@ class Anomali {
       uri: `${options.apiUrl}/api/v2/intelligence/comments/`,
       method: 'GET',
       json: true,
+      headers: {
+        Authorization: `apikey ${options.username}:${options.apikey}`
+      },
       qs: {
-        username: options.username,
-        api_key: options.apikey,
         value: indicatorValue
       }
     };
@@ -121,9 +122,8 @@ class Anomali {
       uri: `${options.apiUrl}/api/v1/user`,
       method: 'GET',
       json: true,
-      qs: {
-        username: options.username,
-        api_key: options.apikey
+      headers: {
+        Authorization: `apikey ${options.username}:${options.apikey}`
       }
     };
 
@@ -137,7 +137,7 @@ class Anomali {
 
         if (Array.isArray(body.objects) && body.objects.length > 0) {
           const userObj = body.objects[0];
-          const userId = userObj.api_key.id;
+          const userId = userObj.id;
           const orgId = userObj.organization.id;
 
           resolve({ userId, orgId });
@@ -170,9 +170,8 @@ class Anomali {
       uri: `${options.apiUrl}/api/v1/intelligence/${record.id}/tag/`,
       method: 'POST',
       json: true,
-      qs: {
-        username: options.username,
-        api_key: options.apikey
+      headers: {
+        Authorization: `apikey ${options.username}:${options.apikey}`
       },
       body: {
         tags: [
@@ -209,9 +208,10 @@ class Anomali {
 
     let requestOptions = {
       uri: `${options.apiUrl}/api/v2/intelligence/tags_by_org/`,
+      headers: {
+        Authorization: `apikey ${options.username}:${options.apikey}`
+      },
       qs: {
-        username: options.username,
-        api_key: options.apikey,
         term: searchTerm,
         exclude: exclude.join(','),
         limit: 20
@@ -264,9 +264,10 @@ class Anomali {
 
     let requestOptions = {
       uri: `${options.apiUrl}/api/v1/orgtag/`,
+      headers: {
+        Authorization: `apikey ${options.username}:${options.apikey}`
+      },
       qs: {
-        username: options.username,
-        api_key: options.apikey,
         limit: 500
       }
     };
@@ -318,9 +319,8 @@ class Anomali {
       uri: `${options.apiUrl}/api/v1/intelligence/${record.id}/tag/`,
       method: 'POST',
       json: true,
-      qs: {
-        username: options.username,
-        api_key: options.apikey
+      headers: {
+        Authorization: `apikey ${options.username}:${options.apikey}`
       },
       body: {
         tags: [
@@ -357,9 +357,8 @@ class Anomali {
       uri: `${options.apiUrl}/api/v1/intelligence/${observableId}/tag/${tagId}/`,
       method: 'DELETE',
       json: true,
-      qs: {
-        username: options.username,
-        api_key: options.apikey
+      headers: {
+        Authorization: `apikey ${options.username}:${options.apikey}`
       }
     };
 
@@ -383,9 +382,8 @@ class Anomali {
       uri: `${options.apiUrl}/api/v2/intelligence/${observableId}/`,
       method: 'GET',
       json: true,
-      qs: {
-        username: options.username,
-        api_key: options.apikey
+      headers: {
+        Authorization: `apikey ${options.username}:${options.apikey}`
       }
     };
 
@@ -409,9 +407,10 @@ class Anomali {
       uri: `${options.apiUrl}/api/v2/intelligence/comments/`,
       method: 'POST',
       json: true,
+      headers: {
+        Authorization: `apikey ${options.username}:${options.apikey}`
+      },
       qs: {
-        username: options.username,
-        api_key: options.apikey,
         value: observable
       },
       body: {
@@ -442,9 +441,8 @@ class Anomali {
       uri: `${options.apiUrl}/api/v2/intelligence/${observableId}/`,
       method: 'PATCH',
       json: true,
-      qs: {
-        username: options.username,
-        api_key: options.apikey
+      headers: {
+        Authorization: `apikey ${options.username}:${options.apikey}`
       },
       body: payload
     };
@@ -458,39 +456,6 @@ class Anomali {
         }
 
         resolve(body);
-      });
-    });
-  }
-
-  async getUserInfo(options) {
-    let self = this;
-
-    let requestOptions = {
-      uri: `${options.apiUrl}/api/v1/user`,
-      method: 'GET',
-      json: true,
-      qs: {
-        username: options.username,
-        api_key: options.apikey
-      }
-    };
-
-    this.log.debug({ requestOptions: requestOptions }, 'getUserInfo');
-
-    return new Promise((resolve, reject) => {
-      self.request(requestOptions, function(err, response, body) {
-        if (err || (response && response.statusCode !== 200)) {
-          return reject({ err, response, body });
-        }
-
-        if (Array.isArray(body.objects) && body.objects.length > 0) {
-          const userObj = body.objects[0];
-          const userId = userObj.api_key.id;
-          const orgId = userObj.organization.id;
-          resolve({ userId, orgId });
-        } else {
-          reject('Unexpected user response body');
-        }
       });
     });
   }
