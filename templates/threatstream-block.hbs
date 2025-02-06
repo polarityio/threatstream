@@ -13,7 +13,7 @@
     </li>
 </ul>
 {{#if (eq activeTab "details")}}
-    {{#each (take maxSourcesInBlock enrichedDetails) as |item index|}}
+    {{#each (limit enrichedDetails maxSourcesInBlock) as |item index|}}
         <div class="item">
             {{#if item.__showUpdateModal}}
                 <div class="update-modal">
@@ -59,8 +59,25 @@
             </div>
             <div>
                 <span class="p-key">Type: </span>
+              {{#if (eq item.type "md5")}}
+                <span class="p-value">
+                  Hash
+                  {{#if (eq item.itype "mal_md5")}}
+                    (Malware File Hash)
+                  {{else}}
+                    ({{item.itype}})  
+                  {{/if}}                  
+                </span>
+              {{else}}
                 <span class="p-value">{{item.type}} ({{item.itype}})</span>
+              {{/if}}                
             </div>
+          {{#if item.subtype}}
+            <div>
+              <span class="p-key">Sub Type: </span>
+              <span class="p-value">{{item.subtype}}</span>
+            </div>
+          {{/if}}
             <div>
                 <span class="p-key">Threat Score: </span>
                 <span class="p-value">{{item.threatscore}}</span>
@@ -106,7 +123,7 @@
                 {{fa-icon "tags" fixedWidth=true}} Tags<span class="ml-1">{{#if item.__deletingTag}}{{fa-icon "spinner-third" spin=true fixedWidth=true}}{{/if}}</span>
             </h1>
             <div class="tag-container">
-                {{#each (take maxTagsInBlock item.tags) as |tag tagIndex|}}
+                {{#each (limit item.tags maxTagsInBlock) as |tag tagIndex|}}
                     <a href="{{block.userOptions.uiUrl}}/search?status=active&tags={{tag.name}}" class="tag {{if (eq tag.tlp "red") "tlp-red"}}">
                         {{tag.name}}
                         <button class="delete-tag-btn" {{action "deleteTag" item tag.id index tagIndex}} disabled={{item.__deletingTag}}>
@@ -122,7 +139,7 @@
                 {{/if}}
 
                 <div class="edit-tags-btn-container">
-                    <span class="p-action" {{action "editTags" index}}>Add Tags {{fa-icon (if editTags "caret-down" "caret-up") fixedWidth=true}}</span>
+                    <span class="p-action" {{action "editTags" index}}>Add Tags {{fa-icon (if item.__editTags "caret-down" "caret-up") fixedWidth=true}}</span>
                 </div>
 
                 {{#if item.__editTags}}
@@ -145,17 +162,23 @@
                                     searchEnabled=true
                                     search=(action "searchTags")
                                     placeholder="Add Tag"
-                                    searchMessage="Loading Tags ..."
-                                    searchPlaceholder="Search tags"
+                                    searchMessage="Waiting to search"
+                                    searchPlaceholder="Enter a search term"
                                     closeOnSelect=true
                                     onopen=(action "searchTags" "" item)
                                     onChange=(action (mut item.__selectedTag)) as |tag|}}
                                 {{tag.name}}
                                 {{#if tag.isNew}}
+                                  <span>
                                     {{fa-icon "plus-circle" fixedWidth=true}}
+                                    {{bs-tooltip title="This is a new tag"}}
+                                  </span>
                                 {{/if}}
                                 {{#if tag.isPreferred}}
+                                  <span>
                                     {{fa-icon "check-circle" fixedWidth=true}}
+                                    {{bs-tooltip title="This is a preferred tag"}}
+                                  </span>
                                 {{/if}}
                             {{/power-select}}
 
@@ -164,8 +187,9 @@
                                     {{#if item.__addingTag}}
                                         {{fa-icon "spinner-third" spin=true fixedWidth=true}}
                                     {{else}}
-                                        {{fa-icon "plus" fixedWidth=true}}
+                                        {{fa-icon "plus" fixedWidth=true}}                                        
                                     {{/if}}
+                                    {{bs-tooltip title="Click to add tag"}}
                                 </button>
                             </div>
                         </div>
