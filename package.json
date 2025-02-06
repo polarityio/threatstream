@@ -1,11 +1,11 @@
 {
   "name": "AnomaliThreatStream",
-  "version": "3.2.10",
+  "version": "3.2.11",
   "main": "./integration.js",
   "private": true,
   "dependencies": {
-    "postman-request": "^2.88.1-postman.34",
+    "postman-request": "^2.88.1-postman.40",
     "lodash": "^4.17.21",
-    "async": "^3.2.5"
+    "async": "^3.2.6"
   }
 }
