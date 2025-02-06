@@ -257,7 +257,7 @@ function _getType(entityType) {
     case 'IPv4':
       return 'type=ip';
     case 'IPv6':
-      return 'type=ip';
+      return 'type=ipv6';
     case 'domain':
       return 'type=domain';
     case 'url':
