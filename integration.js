@@ -34,6 +34,7 @@ async function createEntityGroups(entities, options, cb) {
     try {
       await anomali.cachePreferredTags(options);
     } catch (err) {
+      Logger.error({err}, 'Error fetching tag');
       return cb(err);
     }
   }
@@ -60,6 +61,8 @@ async function createEntityGroups(entities, options, cb) {
       entityLookup[entity.value.toLowerCase()] = entity;
     }
   });
+  
+  Logger.trace({ entityGroups: entityGroups }, 'Entity Groups');
 
   // grab any "trailing" entities
   if (entityGroup.length > 0) {
@@ -227,6 +230,8 @@ function _lookupEntity(entitiesArray, entityLookup, types, options, done) {
         done(err);
         return;
       }
+      
+      Logger.trace({body}, 'Result of lookup');
 
       // body.objects is an array of objects where each object is an indicator
       // there can be more than one indicator object for a single indicator value
@@ -258,7 +263,13 @@ function _getType(entityType) {
     case 'url':
       return 'type=url';
     case 'hash':
-      return 'type=md5';
+      return 'type=hash';
+    case 'MD5':
+      return 'type=hash';
+    case 'SHA1':
+      return 'type=hash';
+    case 'SHA256':
+      return 'type=hash';
     case 'email':
       return 'type=email';
     default:
