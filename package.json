@@ -5,7 +5,7 @@
   "private": true,
   "dependencies": {
     "postman-request": "^2.88.1-postman.40",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "async": "^3.2.6"
   }
 }
