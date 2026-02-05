@@ -1,0 +1,43 @@
+{
+  "root": {
+    "path": "",
+    "on_null": "return_empty"
+  },
+  "pipeline": [
+    {
+      "op": "copy",
+      "from": "intelligence",
+      "to": "reduced_results.intelligence"
+    },
+    {
+      "op": "drop",
+      "paths": [
+        "reduced_results.intelligence[].resource_uri",
+        "reduced_results.intelligence[].id",
+        "reduced_results.intelligence[].sort",
+        "reduced_results.intelligence[].type",
+        "reduced_results.intelligence[].update_id",
+        "reduced_results.intelligence[].can_add_public_tags",
+        "reduced_results.intelligence[].is_editable",
+        "reduced_results.intelligence[].owner_organization_id",
+        "reduced_results.intelligence[].value",
+        "reduced_results.intelligence[].feed_id",
+        "reduced_results.intelligence[].uuid",
+        "reduced_results.intelligence[].source"
+      ]
+    },
+    {
+      "op": "copy",
+      "from": "comments",
+      "to": "reduced_results.comments"
+    },
+    {
+      "op": "prune",
+      "strategy": "empty_values",
+      "target": "reduced_results"
+    }
+  ],
+  "output": {
+    "result": "$working.reduced_results"
+  }
+}

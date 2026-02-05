@@ -1,0 +1,173 @@
+{
+  "intelligence": [
+    {
+      "status": "active",
+      "tlp": "white",
+      "type": "ip",
+      "itype": "c2_ip",
+      "subtype": "botnet",
+      "threatscore": 85,
+      "confidence": 75,
+      "threat_type": "malware",
+      "meta": {
+        "severity": "high",
+        "detail": "Command and control infrastructure"
+      },
+      "created_ts": "2024-01-15T10:30:00.000Z",
+      "modified_ts": "2024-01-16T08:15:00.000Z",
+      "source": "Anomali Labs",
+      "source_reported_confidence": 80,
+      "rdns": "suspicious-domain.example.com",
+      "tags": [
+        {
+          "id": "tag123",
+          "name": "Command & Control (C2)",
+          "tlp": "white"
+        },
+        {
+          "id": "tag456",
+          "name": "Malware",
+          "tlp": "white"
+        },
+        {
+          "id": "tag789",
+          "name": "APT28",
+          "tlp": "amber"
+        }
+      ],
+      "asn": "AS12345",
+      "org": "Example Hosting Provider",
+      "country": "RU",
+      "latitude": 55.7558,
+      "longitude": 37.6173,
+      "description": "Known command and control server for Emotet malware family",
+      "resource_uri": "/api/v2/intelligence/12345678/",
+      "id": 12345678,
+      "sort": [1705397400000, 12345678],
+      "update_id": 98765432,
+      "can_add_public_tags": true,
+      "is_editable": false,
+      "owner_organization_id": 5678,
+      "value": "192.0.2.100",
+      "feed_id": 42,
+      "uuid": "550e8400-e29b-41d4-a716-446655440000",
+      "expiration_ts": "2024-06-15T10:30:00.000Z",
+      "is_public": true,
+      "trusted_circle_ids": []
+    },
+    {
+      "status": "active",
+      "tlp": "amber",
+      "type": "domain",
+      "itype": "phish_domain",
+      "threatscore": 92,
+      "confidence": 88,
+      "threat_type": "phishing",
+      "meta": {
+        "severity": "very-high",
+        "detail": "Active phishing campaign"
+      },
+      "created_ts": "2024-01-10T14:20:00.000Z",
+      "modified_ts": "2024-01-16T07:45:00.000Z",
+      "source": "Community Feed",
+      "source_reported_confidence": 90,
+      "tags": [
+        {
+          "id": "tag111",
+          "name": "Phishing",
+          "tlp": "amber"
+        },
+        {
+          "id": "tag222",
+          "name": "Credential Theft",
+          "tlp": "amber"
+        }
+      ],
+      "registrar": "Example Registrar Inc",
+      "registrant_name": "Privacy Protected",
+      "registration_date": "2024-01-09T00:00:00.000Z",
+      "description": "Phishing domain impersonating major financial institution",
+      "resource_uri": "/api/v2/intelligence/23456789/",
+      "id": 23456789,
+      "sort": [1704896400000, 23456789],
+      "update_id": 87654321,
+      "can_add_public_tags": false,
+      "is_editable": true,
+      "owner_organization_id": 5678,
+      "value": "phishing-example.malicious.com",
+      "feed_id": 101,
+      "uuid": "660e9500-f39c-52e5-b827-557766551111",
+      "expiration_ts": "2024-04-10T14:20:00.000Z",
+      "is_public": false,
+      "trusted_circle_ids": [100, 101, 102]
+    },
+    {
+      "status": "inactive",
+      "tlp": "white",
+      "type": "hash",
+      "itype": "mal_md5",
+      "threatscore": 78,
+      "confidence": 70,
+      "threat_type": "malware",
+      "meta": {
+        "severity": "medium",
+        "detail": "Known ransomware sample"
+      },
+      "created_ts": "2023-12-20T09:00:00.000Z",
+      "modified_ts": "2024-01-05T16:30:00.000Z",
+      "source": "VirusTotal",
+      "source_reported_confidence": 95,
+      "tags": [
+        {
+          "id": "tag333",
+          "name": "Ransomware",
+          "tlp": "white"
+        },
+        {
+          "id": "tag444",
+          "name": "Ryuk",
+          "tlp": "white"
+        }
+      ],
+      "malware_family": "Ryuk",
+      "description": "Ryuk ransomware binary detected in targeted attack",
+      "resource_uri": "/api/v2/intelligence/34567890/",
+      "id": 34567890,
+      "sort": [1703062800000, 34567890],
+      "update_id": 76543210,
+      "can_add_public_tags": true,
+      "is_editable": false,
+      "owner_organization_id": 5678,
+      "value": "5d41402abc4b2a76b9719d911017c592",
+      "feed_id": 55,
+      "uuid": "770fa611-04ad-63f6-c938-668877662222",
+      "expiration_ts": "2024-12-20T09:00:00.000Z",
+      "is_public": true,
+      "trusted_circle_ids": []
+    }
+  ],
+  "comments": [
+    {
+      "comment": "This IP has been observed in multiple phishing campaigns targeting financial institutions.",
+      "tlp": "white",
+      "date": "2024-01-16T08:00:00.000Z",
+      "user": {
+        "email": "analyst@security.example.com",
+        "organization": {
+          "name": "Example Security Org"
+        }
+      }
+    },
+    {
+      "comment": "Added to blocklist. Monitoring for additional activity.",
+      "tlp": "amber",
+      "date": "2024-01-15T16:30:00.000Z",
+      "user": {
+        "email": "soc-team@security.example.com",
+        "organization": {
+          "name": "Example Security Org"
+        }
+      }
+    }
+  ]
+}
